@@ -31,7 +31,6 @@ Hệ thống quản lý điểm bao gồm 5 nhóm tham gia phát triển. Nhóm 
 ## Liên hệ
 Nếu bạn có bất kỳ thắc mắc nào về dự án hoặc muốn đóng góp, vui lòng liên hệ với nhóm qua email của các thành viên hoặc các kênh liên lạc khác (*sẽ được cập nhật*).
 
----
 
 ## Quá trình hoạt động
 - Biên bản họp nhóm nội bộ được diễn ra với tần suất 1 lần/1 tuần.
