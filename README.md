@@ -18,11 +18,12 @@ Hệ thống quản lý điểm bao gồm 5 nhóm tham gia phát triển. Nhóm 
 
 | STT | Tên thành viên               | Vai trò      | Mã số sinh viên | Email               | LinkedIn/GitHub |
 |-----|------------------------------|--------------|-----------------|--------------------|----------------|
-| 1   | Nguyễn Lê Hoàng Phúc         | Product Owner| 2212629          | *(đang cập nhật)*  | *(đang cập nhật)* |
-| 2   | Đặng Quốc Phong              | Developer    | 2212548          | *(đang cập nhật)*  | *(đang cập nhật)* |
-| 3   | Lê Vĩnh Nghiệp               | Developer    | 2212213          | *(đang cập nhật)*  | *(đang cập nhật)* |
-| 4   | Trần Minh Quân               | Developer    | 2212823          | *(đang cập nhật)*  | *(đang cập nhật)* |
-| 5   | Trần Thanh Phong             | Developer    | 2212571          | *(đang cập nhật)*  | *(đang cập nhật)* |
+| 1   | Nguyễn Lê Hoàng Phúc         | Product Owner| 2212629          | *(đang cập nhật)*  | [NLHP-Github]{https://github.com/Huangfu1204} |
+| 2   | Đặng Quốc Phong              | Developer    | 2212548          | *(đang cập nhật)*  | [NLHP-Github]{https://github.com/phongdang17183} |
+| 3   | Lê Vĩnh Nghiệp               | Developer    | 2212213          | *(đang cập nhật)*  | [NLHP-Github]{https://github.com/vinhnghiep0811} |
+| 4   | Trần Minh Quân               | Developer    | 2212823          | *(đang cập nhật)*  | [NLHP-Github]{https://github.com/Dopalan} |
+| 5   | Trần Thanh Phong             | Developer    | 2212571          | *(đang cập nhật)*  | [NLHP-Github]{https://github.com/rabbit-204} |
+| 5   | Trương Anh Tuấn              | Developer    | 2213810          | *(đang cập nhật)*  | [NLHP-Github]{https://github.com/tuntrng} |
 
 ## Hướng dẫn cài đặt
 *Hiện tại chưa có hướng dẫn cài đặt cụ thể, phần này sẽ được cập nhật sau.*
