@@ -27,14 +27,11 @@ Hệ thống quản lý điểm bao gồm 5 nhóm tham gia phát triển. Nhóm 
 ## Hướng dẫn cài đặt
 *Hiện tại chưa có hướng dẫn cài đặt cụ thể, phần này sẽ được cập nhật sau.*
 
+## Báo cáo tiến độ và thành phẩm
+Xem tại đây [đây](https://github.com/dath-241/grade-portal-tele/blob/main/Gerneral_Report.md#%C4%91a%CC%81nh-gia%CC%81-t%E1%BB%95ng-th%E1%BB%83-nh%C3%B3m).
 
 ## Liên hệ
 Nếu bạn có bất kỳ thắc mắc nào về dự án hoặc muốn đóng góp, vui lòng liên hệ với nhóm qua email của các thành viên hoặc các kênh liên lạc khác (*sẽ được cập nhật*).
-
-
-## Quá trình hoạt động
-- Biên bản họp nhóm nội bộ được diễn ra với tần suất 1 lần/1 tuần.
-- Đây là tổng hợp các biên bản họp nhóm: [Tổng hợp biên bản họp nhóm](https://www.canva.com/design/DAGS_GR8W7c/3DhbcAFdo0-Ls1OseWj3og/view?utm_content=DAGS_GR8W7c&utm_campaign=designshare&utm_medium=link&utm_source=editor)
 
 ---
   
