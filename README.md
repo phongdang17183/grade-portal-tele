@@ -32,7 +32,7 @@ Hệ thống quản lý điểm bao gồm 5 nhóm tham gia phát triển. Nhóm 
 Xem tại đây [đây](https://github.com/dath-241/grade-portal-tele/blob/main/Gerneral_Report.md#%C4%91a%CC%81nh-gia%CC%81-t%E1%BB%95ng-th%E1%BB%83-nh%C3%B3m).
 
 ## Liên hệ
-Nếu bạn có bất kỳ thắc mắc nào về dự án hoặc muốn đóng góp, vui lòng liên hệ với nhóm qua email của các thành viên hoặc các kênh liên lạc khác (*sẽ được cập nhật*).
+Nếu bạn có bất kỳ thắc mắc nào về dự án hoặc muốn đóng góp, vui lòng liên hệ với nhóm qua email đại diện [Phuc.nguyenlehoang707@hcmut.edu.vn](Phuc.nguyenlehoang707@hcmut.edu.vn) (PO) hoặc qua phương thức liên hệ của các thành viên trong nhóm.
 
 ---
   
