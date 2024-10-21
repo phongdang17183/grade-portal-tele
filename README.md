@@ -3,7 +3,7 @@
 ## Giới thiệu
 Dự án này là một phần của hệ thống lớn: **Xây dựng hệ thống tra cứu điểm** cho sinh viên trường Đại học Bách khoa - Đại học Quốc gia TP.HCM. Đây là module xây dựng một Telegram bot nhằm cung cấp phương thức nhanh chóng và tiện lợi để tra cứu điểm số.
 
-## Mục tiêu của dự án
+## Mục tiêu của dựa án
 - Tạo ra một phương thức tra cứu điểm mới, giải quyết nhu cầu nhận điểm sớm của sinh viên sau mỗi kỳ kiểm tra.
 - Cung cấp kênh chính thống giúp sinh viên quản lý điểm quá trình, hỗ trợ lập kế hoạch học tập.
 - Trở thành một kênh tiện ích dễ sử dụng cho sinh viên, với giao diện đơn giản trên Telegram.
