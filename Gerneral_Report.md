@@ -5,7 +5,6 @@
 - Đây là tổng hợp các biên bản họp nhóm: [Tổng hợp biên bản họp nhóm](https://www.canva.com/design/DAGS_GR8W7c/3DhbcAFdo0-Ls1OseWj3og/view?utm_content=DAGS_GR8W7c&utm_campaign=designshare&utm_medium=link&utm_source=editor)
 
 ## Tự đánh giá tiến độ từng thành viên
-
 | STT | Tên thành viên               | Vai trò | MSSV     | Tuần 1 | Tuần 2 | Tuần 3 | Tuần 4 | Tuần 5 | Tuần 6 | Tuần 7 | Tuần 8 | Tuần 9 | Tuần 10 |
 |-----|------------------------------|---------|----------| ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------- |
 | 1   | Nguyễn Lê Hoàng Phúc         | PO      | 2212629  | 🟢     | 🟢    | -     | -      | -      | -      | -      | -      | -      | -       |
@@ -20,7 +19,6 @@
     - 🔴 nếu không hoàn thành (0/10) công việc của nhóm giao trong tuần
 
 ### Đánh giá tổng thể nhóm
-
 | Tiêu chí đánh giá | Giữa kỳ | Cuối kỳ |
 | ----------------- | ------- | ------- |
 | Biên bản họp nhóm | -       | -       |
