@@ -1,4 +1,11 @@
-# Grade-Portal-Tele (Module Telegram Bot Tra cứu điểm)
+<div align="center">
+  <a href="">
+    <img src="https://hcmut.edu.vn/img/nhanDienThuongHieu/01_logobachkhoasang.png" alt="HCMUT logo" width="160" height="160">
+    <img src="https://w7.pngwing.com/pngs/703/864/png-transparent-go-language-logo-golang-go-mobile-developer-programming-programming-language-3d-icon.png" alt="Golang logo" width="160" height="160">
+    <img src="https://telegram-bot-sdk.com/img/hero-logo.png" alt="Telegrambot logo" width="160" height="160">
+  </a>
+  <h3 align="center"> Grade-Portal-Tele (Module Telegram Bot Tra cứu điểm)</h3>
+</div>
 
 ## Giới thiệu
 Dự án này là một phần của hệ thống lớn: **Xây dựng hệ thống tra cứu điểm** cho sinh viên trường Đại học Bách khoa - Đại học Quốc gia TP.HCM. Đây là module xây dựng một Telegram bot nhằm cung cấp phương thức nhanh chóng và tiện lợi để tra cứu điểm số.
