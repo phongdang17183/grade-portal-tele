@@ -41,7 +41,7 @@ func main() {
 		log.Printf("[%s] %s\n", update.Message.From.UserName, update.Message.Text)
 
 		// Phản hồi với người dùng
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Bạn đã gửi: "+update.Message.Text)
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Bạn đã gửi: "+update.Message.Text + "\nGửi cái đéo gì nữa, HP không biết làm cái gì cả :(")
 		if _, err := bot.Send(msg); err != nil {
 			log.Println(err)
 		}
