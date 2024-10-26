@@ -1,8 +1,10 @@
 <div align="center">
-   <img src="https://hcmut.edu.vn/img/nhanDienThuongHieu/bk_name_en.png" alt="HCMUT logo" width="850">
+   <img src="https://hcmut.edu.vn/img/nhanDienThuongHieu/bk_name_en.png" alt="HCMUT logo" width="700">
+</div>
+<div align="center">
   <a href="">
     <img src="https://cdn3d.iconscout.com/3d/free/thumb/free-golang-3d-icon-download-in-png-blend-fbx-gltf-file-formats--google-logo-go-programming-language-coding-lang-pack-logos-icons-7578004.png" alt="Golang logo" width="160" height="160">
-    <img src="https://telegram-bot-sdk.com/img/hero-logo.png" alt="Telegrambot logo" width="160" height="160">
+    <img src="https://telegram-bot-sdk.com/img/hero-logo.png" alt="Telegrambot logo" width="140" height="140">
   </a>
   <h1 align="center"> Grade-Portal-Tele (Module Telegram Bot Tra cứu điểm)</h1>
 </div>
