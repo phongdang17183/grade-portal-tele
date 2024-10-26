@@ -1,3 +1,4 @@
+<<<<<<< Project_Structure
 # Grade-Portal-Tele (Module Telegram Bot Tra cứu điểm)
 
 ## Giới thiệu
@@ -39,4 +40,3 @@ Nếu bạn có bất kỳ thắc mắc nào về dự án hoặc muốn đóng 
 ---
 
 > *README này sẽ được cập nhật thường xuyên để cung cấp thêm thông tin chi tiết và hướng dẫn sử dụng.*
-

@@ -1,6 +1,5 @@
 # File môi trường
-.env
-dev.env
+*.env
 
 # Thư mục build
 /bin/
