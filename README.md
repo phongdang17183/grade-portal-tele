@@ -1,4 +1,3 @@
-<<<<<<< Project_Structure
 # Grade-Portal-Tele (Module Telegram Bot Tra cứu điểm)
 
 ## Giới thiệu
