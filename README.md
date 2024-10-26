@@ -34,6 +34,11 @@ Xem tại đây [đây](https://github.com/dath-241/grade-portal-tele/blob/main/
 ## Liên hệ
 Nếu bạn có bất kỳ thắc mắc nào về dự án hoặc muốn đóng góp, vui lòng liên hệ với nhóm qua email đại diện [Phuc.nguyenlehoang707@hcmut.edu.vn](Phuc.nguyenlehoang707@hcmut.edu.vn) (PO) hoặc qua phương thức liên hệ của các thành viên trong nhóm.
 
+
+## Quá trình hoạt động
+- Biên bản họp nhóm nội bộ được diễn ra với tần suất 1 lần/1 tuần.
+- Đây là tổng hợp các biên bản họp nhóm: [Tổng hợp biên bản họp nhóm](https://www.canva.com/design/DAGS_GR8W7c/3DhbcAFdo0-Ls1OseWj3og/view?utm_content=DAGS_GR8W7c&utm_campaign=designshare&utm_medium=link&utm_source=editor)
+
 ---
   
 > *README này sẽ được cập nhật thường xuyên để cung cấp thêm thông tin chi tiết và hướng dẫn sử dụng.*
