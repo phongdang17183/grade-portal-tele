@@ -1,40 +1,42 @@
 package services
 
-import (
-	"encoding/json"
-	"io/ioutil"
-	"net/http"
-)
+// FILE NÀY TẠM THỜI BỎ TRỐNG, FETCH API 
 
-// User struct để lưu dữ liệu người dùng từ API
-type User struct {
-	ID       int    `json:"id"`
-	Name     string `json:"name"`
-	Username string `json:"username"`
-	Email    string `json:"email"`
-}
+// import (
+// 	"encoding/json"
+// 	"io/ioutil"
+// 	"net/http"
+// )
 
-// FetchUsers function để gọi API từ JSONPlaceholder
-func FetchUsers() ([]User, error) {
-	// Gửi yêu cầu GET tới API
-	resp, err := http.Get("https://jsonplaceholder.typicode.com/users")
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
+// // User struct để lưu dữ liệu người dùng từ API
+// type User struct {
+// 	ID       int    `json:"id"`
+// 	Name     string `json:"name"`
+// 	Username string `json:"username"`
+// 	Email    string `json:"email"`
+// }
 
-	// Đọc dữ liệu từ phản hồi
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
+// // FetchUsers function để gọi API từ JSONPlaceholder
+// func FetchUsers() ([]User, error) {
+// 	// Gửi yêu cầu GET tới API
+// 	resp, err := http.Get("https://jsonplaceholder.typicode.com/users")
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	defer resp.Body.Close()
 
-	// Phân tích JSON
-	var users []User
-	err = json.Unmarshal(body, &users)
-	if err != nil {
-		return nil, err
-	}
+// 	// Đọc dữ liệu từ phản hồi
+// 	body, err := ioutil.ReadAll(resp.Body)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	return users, nil
-}
+// 	// Phân tích JSON
+// 	var users []User
+// 	err = json.Unmarshal(body, &users)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	return users, nil
+// }
