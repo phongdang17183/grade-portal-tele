@@ -1,0 +1,21 @@
+# File môi trường
+*.env
+
+# Thư mục build
+/bin/
+/obj/
+
+# File log
+*.log
+
+# File tạm thời của IDE
+.idea/
+.vscode/
+
+# File nhị phân của Go
+*.exe
+*.exe~
+*.out
+
+# Thư mục khác không cần thiết
+/vendor/
