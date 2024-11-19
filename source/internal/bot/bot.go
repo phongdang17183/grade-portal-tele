@@ -2,11 +2,12 @@
 package bot
 
 import (
-	"fmt"
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"log"
-	"Grade_Portal_TelegramBot/internal/handlers"
 	"Grade_Portal_TelegramBot/config"
+	"Grade_Portal_TelegramBot/internal/handlers"
+	"fmt"
+	"log"
+
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 func Start() {

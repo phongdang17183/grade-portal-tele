@@ -14,6 +14,8 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 		HandleStart(bot, update)
 	case "register":
 		HandleRegister(bot, update, update.Message.CommandArguments())
+	case "login":
+		HanldeLogin(bot, update, update.Message.CommandArguments())
 	case "help":
 		HandleHelp(bot, update)
 	case "info":
@@ -32,21 +34,35 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 
 func HandleStart(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	userID := update.Message.From.ID
+	print(userID)
 	response := fmt.Sprintf("Chào mừng %d tôi là hệ thống tra cứu điểm - một bot-chat hỗ trợ tra cứu điểm nhanh chóng!\n\n"+
 		"Hướng dẫn sử dụng: Đăng nhập qua lệnh /register + [MSSV]. Một số lệnh bạn có thể dùng:\n"+
 		"/grade - tra cứu điểm\n/history- xem lịch sử điểm\n/help - để biết thêm các lệnh khác.",
 		userID)
+
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
 	bot.Send(msg)
 }
 
-func HandleRegister(bot *tgbotapi.BotAPI, update tgbotapi.Update, studentID string) {
-	success := services.RegisterStudent(update.Message.Chat.ID, studentID)
+func HandleRegister(bot *tgbotapi.BotAPI, update tgbotapi.Update, email string) {
+	success := services.RegisterStudent(update.Message.Chat.ID, email)
 	var response string
 	if success {
-		response = "Chào mừng đến với hệ thống."
+		response = "Hãy check email và login bằng otp với cú pháp /login + otp bạn nhé."
 	} else {
-		response = "Tài khoản Telegram này đã đăng ký với MSSV khác. Đăng ký không thành công.jyhht"
+		response = "Có lỗi trong việc đăng ký hãy thử lại sau"
+	}
+	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
+	bot.Send(msg)
+}
+
+func HanldeLogin(bot *tgbotapi.BotAPI, update tgbotapi.Update, otp string) {
+	success := services.Login(update.Message.Chat.ID, otp)
+	var response string
+	if success {
+		response = "Đăng nhập thành công, bạn có thể sử dụng các chức năng của bot"
+	} else {
+		response = "Có lỗi trong việc xác thực hãy thử lại sau"
 	}
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
 	bot.Send(msg)
@@ -55,7 +71,8 @@ func HandleRegister(bot *tgbotapi.BotAPI, update tgbotapi.Update, studentID stri
 func HandleHelp(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	helpMessage := ` Danh sách lệnh hỗ trợ: 
 	/start - Bắt đầu sử dụng bot và nhận hướng dẫn 
-	/register <MSSV> - Đăng ký tài khoản với mã số sinh viên (MSSV) của bạn 
+	/register <email> - Đăng ký tài khoản với email của bạn hệ thống sẽ gửi bạn otp
+	/login <otp> - Đăng nhập với otp đã gửi 
 	/info - Xem thông tin tài khoản của bạn 
 	/grade <semester or course ID> - Tra cứu điểm theo học kỳ hoặc mã môn học 
 	/clear - Xóa lịch sử tra cứu điểm 
