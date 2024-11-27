@@ -4,12 +4,14 @@ import (
 	"Grade_Portal_TelegramBot/internal/models"
 	"bytes"
 	"encoding/json"
-	"errors"
+	// "errors"
 	"fmt"
+    config "Grade_Portal_TelegramBot/config"
 	//"io"
-	//"log"
+	"log"
 	"net/http"
 	"time"
+    "context"
 )
 
 type ResLogin struct {
@@ -200,134 +202,150 @@ func Login(chatID int64, mssv string, pw string) (*ResLogin, error) {
 		IDTele: chatID,
 		Token:  resLogin.Token,
 	}
+
+    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+    collection := config.MongoClient.Database("Do_an").Collection("TOKEN")
+    result, err := collection.InsertOne(ctx, token)
+    if err != nil {
+		log.Fatalf("Lỗi khi lưu dữ liệu: %v", err)
+	}
+    fmt.Printf("Lưu thành công, ID tài liệu: %v\n", result.InsertedID)
+
 	fmt.Println(token)
 	return &resLogin, nil
 }
 
 func GetStudentInfo(chatID int64) (*Info, error) {
-	baseURL := "https://api.example.com"
-	endpoint := "/info"
-	url := baseURL + endpoint
+	// baseURL := "https://api.example.com"
+	// endpoint := "/info"
+	// url := baseURL + endpoint
 
-	client := &http.Client{
-		Timeout: 10 * time.Second,
-	}
+	// client := &http.Client{
+	// 	Timeout: 10 * time.Second,
+	// }
 
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %w", err)
-	}
+	// req, err := http.NewRequest("GET", url, nil)
+	// if err != nil {
+	// 	return nil, fmt.Errorf("error creating request: %w", err)
+	// }
 
-	token := token[chatID]
-	req.Header.Set("Authorization", `Bearer `+token)
-	req.Header.Set("Content-Type", "application/json")
+	// token := token[chatID]
+	// req.Header.Set("Authorization", `Bearer `+token)
+	// req.Header.Set("Content-Type", "application/json")
 
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %w", err)
-	}
-	defer resp.Body.Close()
+	// resp, err := client.Do(req)
+	// if err != nil {
+	// 	return nil, fmt.Errorf("error sending request: %w", err)
+	// }
+	// defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
-	}
+	// if resp.StatusCode != http.StatusOK {
+	// 	return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+	// }
 
-	var info Info
-	if err := json.NewDecoder(resp.Body).Decode(&info); err != nil {
-		return nil, fmt.Errorf("error decoding response: %w", err)
-	}
+	// var info Info
+	// if err := json.NewDecoder(resp.Body).Decode(&info); err != nil {
+	// 	return nil, fmt.Errorf("error decoding response: %w", err)
+	// }
 
-	return &info, nil
+	// return &info, nil
+    return nil, nil
 }
 
 func GetGrades(chatID int64, semesterOrCourseID string) (*Grade, error) {
 
-	baseURL := "https://api.example.com"
-	endpoint := `/resultScore/getmark/` + semesterOrCourseID
+	// baseURL := "https://api.example.com"
+	// endpoint := `/resultScore/getmark/` + semesterOrCourseID
 
-	url := baseURL + endpoint
+	// url := baseURL + endpoint
 
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %w", err)
-	}
+	// req, err := http.NewRequest("GET", url, nil)
+	// if err != nil {
+	// 	return nil, fmt.Errorf("error creating request: %w", err)
+	// }
 
-	// token := GetToken(chatID) // can hien thuc TODO
-	token := token[chatID]
+	// // token := GetToken(chatID) // can hien thuc TODO
+	// token := token[chatID]
 
-	// Thêm Authorization header với biến token
-	req.Header.Set("Authorization", "Bearer "+token)
-	req.Header.Set("Content-Type", "application/json")
+	// // Thêm Authorization header với biến token
+	// req.Header.Set("Authorization", "Bearer "+token)
+	// req.Header.Set("Content-Type", "application/json")
 
-	client := &http.Client{
-		Timeout: 10 * time.Second,
-	}
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %w", err)
-	}
-	defer resp.Body.Close()
+	// client := &http.Client{
+	// 	Timeout: 10 * time.Second,
+	// }
+	// resp, err := client.Do(req)
+	// if err != nil {
+	// 	return nil, fmt.Errorf("error sending request: %w", err)
+	// }
+	// defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
-	}
+	// if resp.StatusCode != http.StatusOK {
+	// 	return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+	// }
 
-	var grades Grade
-	if err := json.NewDecoder(resp.Body).Decode(&grades); err != nil {
-		return nil, fmt.Errorf("error decoding response: %w", err)
-	}
+	// var grades Grade
+	// if err := json.NewDecoder(resp.Body).Decode(&grades); err != nil {
+	// 	return nil, fmt.Errorf("error decoding response: %w", err)
+	// }
 
-	return &grades, nil
+	// return &grades, nil
+    return nil, nil
 }
 
 func GetAllGrades() (*AllGrades, error) {
 
-	baseURL := "https://api.example.com"
-	endpoint := "/resultScore/getmark"
-	url := baseURL + endpoint
+	// baseURL := "https://api.example.com"
+	// endpoint := "/resultScore/getmark"
+	// url := baseURL + endpoint
 
-	// Tạo HTTP request với phương thức GET
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %v", err)
-	}
+	// // Tạo HTTP request với phương thức GET
+	// req, err := http.NewRequest("GET", url, nil)
+	// if err != nil {
+	// 	return nil, fmt.Errorf("failed to create request: %v", err)
+	// }
 
-	// Thêm header Authorization với token
-	token := token[chatID]
-	req.Header.Add("Authorization", "Bearer "+token)
-	req.Header.Set("Content-Type", "application/json")
+	// // Thêm header Authorization với token
+	// token := token[chatID]
+	// req.Header.Add("Authorization", "Bearer "+token)
+	// req.Header.Set("Content-Type", "application/json")
 
-	client := &http.Client{
-		Timeout: 10 * time.Second,
-	}
+	// client := &http.Client{
+	// 	Timeout: 10 * time.Second,
+	// }
 
-	// Gửi request
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to send request: %v", err)
-	}
-	defer resp.Body.Close()
+	// // Gửi request
+	// resp, err := client.Do(req)
+	// if err != nil {
+	// 	return nil, fmt.Errorf("failed to send request: %v", err)
+	// }
+	// defer resp.Body.Close()
 
-	// Kiểm tra status code của response
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
-	}
+	// // Kiểm tra status code của response
+	// if resp.StatusCode != http.StatusOK {
+	// 	return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+	// }
 
-	var allGrades AllGrades
-	if err := json.NewDecoder(resp.Body).Decode(&allGrades); err != nil {
-	}
+	// var allGrades AllGrades
+	// if err := json.NewDecoder(resp.Body).Decode(&allGrades); err != nil {
+	// }
 
-	return &allGrades, nil
+	// return &allGrades, nil
+    return nil, nil
 }
 
 func ClearHistory(chatID int64) {
-	delete(history, chatID)
+	// delete(history, chatID)
+
 }
 
 func GetHistory(chatID int64) (*History, error) {
-	studentHistory, exists := history[chatID]
-	if !exists {
-		return nil, errors.New("history not found")
-	}
-	return studentHistory, nil
+	// studentHistory, exists := history[chatID]
+	// if !exists {
+	// 	return nil, errors.New("history not found")
+	// }
+	// return studentHistory, nil
+    return nil, nil
 }

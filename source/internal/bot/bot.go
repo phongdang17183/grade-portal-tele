@@ -4,11 +4,8 @@ package bot
 import (
 	"Grade_Portal_TelegramBot/config"
 	"Grade_Portal_TelegramBot/internal/handlers"
-	"context"
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 )
 
@@ -21,15 +18,7 @@ func Start() {
 		log.Fatalf("Failed to create bot: %v", err) // In lỗi chi tiết
 	}
 	// connet DBMongo
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(cfg.DBURL))
-	defer func() {
-		if err := client.Disconnect(ctx); err != nil {
-			log.Fatal("Failed to disconnect: %v ", err)
-		}
-	}()
-
+	config.ConnectMongoDB(cfg.DBURL)
 	fmt.Printf("Authorized on account %s\n", bot.Self.UserName)
 
 	// Cấu hình để nhận cập nhật
