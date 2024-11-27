@@ -18,19 +18,20 @@ type Info struct {
 	ExpiresAt time.Time `json:"expires_at"`
 }
 
-type Grade struct {
-	Name  string `json:"name"`
-	Score Score  `json:"score"`
-}
-type History struct {
-	CourseID []string `json:"courseId"`
-}
 type Score struct {
 	BT  *float64 `json:"BT"`
 	TN  *float64 `json:"TN"`
 	BTL *float64 `json:"BTL"`
 	GK  *float64 `json:"GK"`
 	CK  *float64 `json:"CK"`
+}
+
+type Grade struct {
+	Name  string `json:"name"`
+	Score Score  `json:"score"`
+}
+type History struct {
+	CourseID []string `json:"courseId"`
 }
 type Grades struct {
 	Ms    string `json:"ms"`

@@ -10,52 +10,10 @@ import (
 	//"log"
 	"net/http"
 	"time"
+	"Grade_Portal_TelegramBot/internal/bot"
 )
 
-type ResLogin struct {
-	ListCourse []string `json:"listCourse"`
-	Token      string   `json:"token"`
-}
-
-type Info struct {
-	ID        string    `json:"id"`
-	Email     string    `json:"email"`
-	Name      string    `json:"name"`
-	Ms        string    `json:"ms"`
-	Faculty   string    `json:"faculty"`
-	Role      string    `json:"role"`
-	CreatedBy string    `json:"created_by"`
-	ExpiresAt time.Time `json:"expires_at"`
-}
-
-type Score struct {
-	BT  *float64 `json:"BT"`
-	TN  *float64 `json:"TN"`
-	BTL *float64 `json:"BTL"`
-	GK  *float64 `json:"GK"`
-	CK  *float64 `json:"CK"`
-}
-
-type Grade struct {
-	Name  string `json:"name"`
-	Score Score  `json:"score"`
-}
-type History struct {
-	CourseID []string `json:"courseId"`
-}
-type Grades struct {
-	Ms    string `json:"ms"`
-	Name  string `json:"name"`
-	Score Score  `json:"score"`
-}
-type AllGrades struct {
-	AllGrades []Grades `json:"all_grades"`
-}
-type MsgResp struct {
-	Msg string `json:"msg"`
-}
-
-func RegisterStudent(mssv string, pw string, otp string) (*MsgResp, error) {
+func RegisterStudent(mssv string, pw string, otp string) (*models.MsgResp, error) {
 
 	base_url := "https://api.example.com"
 	endpoint := "/resetpassword"
@@ -97,7 +55,7 @@ func RegisterStudent(mssv string, pw string, otp string) (*MsgResp, error) {
 		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 	}
 
-	var msgResp MsgResp
+	var msgResp models.MsgResp
 	if err := json.NewDecoder(resp.Body).Decode(&msgResp); err != nil {
 		return nil, fmt.Errorf("error decoding response: %w", err)
 	}
@@ -153,7 +111,7 @@ func GetOTP(mssv string) (*MsgResp, error) {
 	return &msgResp, nil
 }
 
-func Login(chatID int64, mssv string, pw string) (*ResLogin, error) {
+func Login(chatID int64, mssv string, pw string) (*models.ResLogin, error) {
 
 	base_url := "https://api.example.com"
 	endpoint := "/login"
@@ -191,7 +149,7 @@ func Login(chatID int64, mssv string, pw string) (*ResLogin, error) {
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 	}
-	var resLogin ResLogin
+	var resLogin models.ResLogin
 	if err := json.NewDecoder(resp.Body).Decode(&resLogin); err != nil {
 		return nil, fmt.Errorf("error decoding response: %w", err)
 	}
@@ -200,6 +158,7 @@ func Login(chatID int64, mssv string, pw string) (*ResLogin, error) {
 		IDTele: chatID,
 		Token:  resLogin.Token,
 	}
+	collection := client.Database("your_database_name").Collection("tokens")
 	fmt.Println(token)
 	return &resLogin, nil
 }
