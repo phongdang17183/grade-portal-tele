@@ -8,16 +8,18 @@ type ResLogin struct {
 }
 
 type Info struct {
-	ID        string    `json:"id"`
-	Email     string    `json:"email"`
-	Name      string    `json:"name"`
-	Ms        string    `json:"ms"`
-	Faculty   string    `json:"faculty"`
-	Role      string    `json:"role"`
-	CreatedBy string    `json:"created_by"`
-	ExpiresAt time.Time `json:"expires_at"`
+	ID        string    `json:"ID"`
+	Email     string    `json:"Email"`
+	Name      string    `json:"Name"`
+	Ms        string    `json:"Ms"`
+	Faculty   string    `json:"Faculty"`
+	Role      string    `json:"Role"`
+	CreatedBy string    `json:"CreatedBy"`
+	ExpiresAt time.Time `json:"ExpiredAt"`
 }
-
+type InfoSV struct {
+	InfoSv Info `json:"user"`
+}
 type Score struct {
 	BT  *float64 `json:"BT"`
 	TN  *float64 `json:"TN"`
@@ -30,16 +32,14 @@ type Grade struct {
 	Name  string `json:"name"`
 	Score Score  `json:"score"`
 }
-type History struct {
-	CourseID []string `json:"courseId"`
-}
+
 type Grades struct {
 	Ms    string `json:"ms"`
 	Name  string `json:"name"`
 	Score Score  `json:"score"`
 }
 type AllGrades struct {
-	AllGrades []Grades `json:"all_grades"`
+	AllGrades []Grades `json:"scores"`
 }
 type MsgResp struct {
 	Msg string `json:"msg"`

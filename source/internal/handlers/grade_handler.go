@@ -16,11 +16,11 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	case "getOTP":
 		HandleOTP(bot, update, update.Message.CommandArguments())
 	case "register":
-		HandleRegister(bot, update, update.Message.CommandArguments(), update.Message.CommandArguments(), update.Message.CommandArguments())
+		HandleRegister(bot, update, update.Message.CommandArguments())
 	case "resetPassWord":
-		HandleRegister(bot, update, update.Message.CommandArguments(), update.Message.CommandArguments(), update.Message.CommandArguments())
+		HandleRegister(bot, update, update.Message.CommandArguments())
 	case "login":
-		HanldeLogin(bot, update, update.Message.CommandArguments(), update.Message.CommandArguments())
+		HanldeLogin(bot, update, update.Message.CommandArguments())
 	case "help":
 		HandleHelp(bot, update)
 	case "info":
@@ -51,7 +51,10 @@ func HandleStart(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	bot.Send(msg)
 }
 
-func HandleRegister(bot *tgbotapi.BotAPI, update tgbotapi.Update, mssv string, pw string, otp string) {
+func HandleRegister(bot *tgbotapi.BotAPI, update tgbotapi.Update, input string) {
+	parts := strings.Split(input, " ")
+	var mssv, pw, otp string
+	mssv, pw, otp = parts[0], parts[1], parts[2]
 	resp, err := services.RegisterStudent(mssv, pw, otp)
 	var response string
 	if err == nil {
@@ -74,7 +77,10 @@ func HandleOTP(bot *tgbotapi.BotAPI, update tgbotapi.Update, mssv string) {
 	bot.Send(msg)
 }
 
-func HanldeLogin(bot *tgbotapi.BotAPI, update tgbotapi.Update, mssv string, pw string) {
+func HanldeLogin(bot *tgbotapi.BotAPI, update tgbotapi.Update, input string) {
+	parts := strings.Split(input, " ")
+	var mssv, pw string
+	mssv, pw = parts[0], parts[1]
 	resp, err := services.Login(update.Message.Chat.ID, mssv, pw)
 	var response string
 	if err == nil {
@@ -103,12 +109,12 @@ func HandleHelp(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 func HandleInfo(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	resp, err := services.GetStudentInfo(update.Message.Chat.ID)
 	if err != nil {
-		response := "Không tìm thấy thông tin đăng nhập."
+		response := "Không tìm thấy thông tin đăng nhập." + err.Error()
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
 		bot.Send(msg)
 		return
 	}
-	response := fmt.Sprintf("Thông tin đăng nhập\n________\nHọ và tên: %s\nMSSV: %s %s", resp.Name, resp.ID, resp.Faculty)
+	response := fmt.Sprintf("Thông tin đăng nhập\n________\nHọ và tên: %s\nMSSV: %s\nKhoa: %s", resp.InfoSv.Name, resp.InfoSv.Ms, resp.InfoSv.Faculty)
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
 	bot.Send(msg)
 }
@@ -116,6 +122,7 @@ func HandleInfo(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 func HandleGrade(bot *tgbotapi.BotAPI, update tgbotapi.Update, semesterOrCourseID string) {
 	resp, err := services.GetGrades(update.Message.Chat.ID, semesterOrCourseID)
 	var response string
+
 	if err != nil {
 		response = "Không thể lấy dữ liệu điểm." + err.Error()
 	} else {
@@ -156,14 +163,14 @@ func HandleGrade(bot *tgbotapi.BotAPI, update tgbotapi.Update, semesterOrCourseI
 }
 
 func HandleAllGrade(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
-	resp, err := services.GetAllGrades()
+	resp, err := services.GetAllGrades(update.Message.Chat.ID)
 	var response string
 	if err != nil {
 		response = "Không thể lấy dữ liệu điểm." + err.Error()
 	} else {
 		response = "Kết quả điểm:\n________\n"
 		for _, grade := range resp.AllGrades {
-			response += fmt.Sprintf("Sinh viên: %s\nMSSV: %s\n", grade.Ms, grade.Name)
+			response += fmt.Sprintf("Mã Môn: %s\nMôn: %s\n", grade.Ms, grade.Name)
 
 			if grade.Score.BT != nil {
 				response += fmt.Sprintf("  - BT: %.1f\n", *grade.Score.BT)
@@ -202,24 +209,27 @@ func HandleAllGrade(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 }
 
 func HandleClear(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
-	services.ClearHistory(update.Message.Chat.ID)
-	response := "Lịch sử tra cứu đã được xóa."
+	res := services.ClearHistory(update.Message.Chat.ID)
+	var response string
+	if res == true {
+		response = "Lịch sử tra cứu đã được xóa."
+	} else {
+		response = "Error"
+	}
+
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
 	bot.Send(msg)
 }
 
 func HandleHistory(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
-	// history, err := services.GetHistory(update.Message.Chat.ID)
-	// var response string
-	// if err != nil {
-	// 	response = "Không có lịch sử tra cứu nào."
-	// } else {
-	// 	response = "Lịch sử tra cứu:\n"
-	// 	for _, entry := range history {
-	// 		response += fmt.Sprintf("%s: %.1f\n", entry.CourseName, entry.Score)
-	// 	}
-	// }
-	// msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
-	// bot.Send(msg)
-	fmt.Print("History")
+	_, err := services.GetHistory(update.Message.Chat.ID)
+	var response string
+	if err != nil {
+		response = "Không có lịch sử tra cứu nào."
+	} else {
+		response = "res"
+	}
+	//fmt.Println(res)
+	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
+	bot.Send(msg)
 }

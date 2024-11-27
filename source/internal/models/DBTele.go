@@ -6,7 +6,6 @@ type DBToken struct {
 	Token  string `json:"token"`
 }
 type DBHistory struct {
-	Mssv      string   `json:"mssv"`
-	IDTele    int64    `json:"id_tele"`
-	HisCourse []string `json:"his_course"`
+	ChatID     int64    `json:"chat_id"`
+	ListCourse []string `json:"list_course"`
 }
