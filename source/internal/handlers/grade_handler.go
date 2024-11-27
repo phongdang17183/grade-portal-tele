@@ -12,16 +12,22 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	switch update.Message.Command() {
 	case "start":
 		HandleStart(bot, update)
+	case "getOTP":
+		HandleOTP(bot, update, update.Message.CommandArguments())
 	case "register":
-		HandleRegister(bot, update, update.Message.CommandArguments())
+		HandleRegister(bot, update, update.Message.CommandArguments(), update.Message.CommandArguments(), update.Message.CommandArguments())
+	case "resetPassWord":
+		HandleRegister(bot, update, update.Message.CommandArguments(), update.Message.CommandArguments(), update.Message.CommandArguments())
 	case "login":
-		HanldeLogin(bot, update, update.Message.CommandArguments())
+		HanldeLogin(bot, update, update.Message.CommandArguments(), update.Message.CommandArguments())
 	case "help":
 		HandleHelp(bot, update)
 	case "info":
 		HandleInfo(bot, update)
 	case "grade":
 		HandleGrade(bot, update, update.Message.CommandArguments())
+	case "allGrade":
+		HandleAllGrade(bot, update)
 	case "clear":
 		HandleClear(bot, update)
 	case "history":
@@ -44,20 +50,31 @@ func HandleStart(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	bot.Send(msg)
 }
 
-func HandleRegister(bot *tgbotapi.BotAPI, update tgbotapi.Update, email string) {
-	success := services.RegisterStudent(update.Message.Chat.ID, email)
+func HandleRegister(bot *tgbotapi.BotAPI, update tgbotapi.Update, mssv string, pw string, otp string) {
+	success := services.RegisterStudent(update.Message.Chat.ID, mssv, pw, otp)
 	var response string
 	if success {
-		response = "Hãy check email và login bằng otp với cú pháp /login + otp bạn nhé."
+		response = "Bạn đã đăng ký thành công, vui lòng login bằng cú pháp /login_mssv_password để sử dụng dịch vụ."
 	} else {
 		response = "Có lỗi trong việc đăng ký hãy thử lại sau"
 	}
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
 	bot.Send(msg)
 }
+func HandleOTP(bot *tgbotapi.BotAPI, update tgbotapi.Update, mssv string) {
+	success := services.GetOTP(update.Message.Chat.ID, mssv)
+	var response string
+	if success {
+		response = "OTP đã được gửi về email của bạn, vui kiểm tra email."
+	} else {
+		response = "Có lỗi trong việc xác thực hãy thử lại sau"
+	}
+	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
+	bot.Send(msg)
+}
 
-func HanldeLogin(bot *tgbotapi.BotAPI, update tgbotapi.Update, otp string) {
-	success := services.Login(update.Message.Chat.ID, otp)
+func HanldeLogin(bot *tgbotapi.BotAPI, update tgbotapi.Update, mssv string, pw string) {
+	success := services.Login(update.Message.Chat.ID, mssv, pw)
 	var response string
 	if success {
 		response = "Đăng nhập thành công, bạn có thể sử dụng các chức năng của bot"
@@ -97,6 +114,21 @@ func HandleInfo(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 
 func HandleGrade(bot *tgbotapi.BotAPI, update tgbotapi.Update, semesterOrCourseID string) {
 	grades, err := services.GetGrades(update.Message.Chat.ID, semesterOrCourseID)
+	var response string
+	if err != nil {
+		response = "Không thể lấy dữ liệu điểm."
+	} else {
+		response = fmt.Sprintf("Kết quả điểm cho %s:\n________\n", semesterOrCourseID)
+		for _, grade := range grades {
+			response += fmt.Sprintf("%s: %.1f\n", grade.CourseName, grade.Score)
+		}
+	}
+	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
+	bot.Send(msg)
+}
+
+func HandleAllGrade(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
+	grades, err := services.GetAllGrades()
 	var response string
 	if err != nil {
 		response = "Không thể lấy dữ liệu điểm."
