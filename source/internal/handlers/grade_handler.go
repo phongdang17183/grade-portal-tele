@@ -3,6 +3,7 @@ package handlers
 import (
 	"Grade_Portal_TelegramBot/internal/services"
 	"fmt"
+	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -51,35 +52,35 @@ func HandleStart(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 }
 
 func HandleRegister(bot *tgbotapi.BotAPI, update tgbotapi.Update, mssv string, pw string, otp string) {
-	success := services.RegisterStudent(update.Message.Chat.ID, mssv, pw, otp)
+	resp, err := services.RegisterStudent(mssv, pw, otp)
 	var response string
-	if success {
-		response = "Bạn đã đăng ký thành công, vui lòng login bằng cú pháp /login_mssv_password để sử dụng dịch vụ."
+	if err == nil {
+		response = resp.Msg + ", vui lòng login bằng cú pháp /login_mssv_password để sử dụng dịch vụ."
 	} else {
-		response = "Có lỗi trong việc đăng ký hãy thử lại sau"
+		response = "Error fetching student info:" + err.Error()
 	}
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
 	bot.Send(msg)
 }
 func HandleOTP(bot *tgbotapi.BotAPI, update tgbotapi.Update, mssv string) {
-	success := services.GetOTP(update.Message.Chat.ID, mssv)
+	_, err := services.GetOTP(mssv)
 	var response string
-	if success {
+	if err == nil {
 		response = "OTP đã được gửi về email của bạn, vui kiểm tra email."
 	} else {
-		response = "Có lỗi trong việc xác thực hãy thử lại sau"
+		response = err.Error()
 	}
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
 	bot.Send(msg)
 }
 
 func HanldeLogin(bot *tgbotapi.BotAPI, update tgbotapi.Update, mssv string, pw string) {
-	success := services.Login(update.Message.Chat.ID, mssv, pw)
+	resp, err := services.Login(update.Message.Chat.ID, mssv, pw)
 	var response string
-	if success {
-		response = "Đăng nhập thành công, bạn có thể sử dụng các chức năng của bot"
+	if err == nil {
+		response = "Đăng nhập thành công, các khóa học bạn đang có là: " + strings.Join(resp.ListCourse, ", ")
 	} else {
-		response = "Có lỗi trong việc xác thực hãy thử lại sau"
+		response = "Có lỗi trong việc xác thực hãy thử lại sau" + err.Error()
 	}
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
 	bot.Send(msg)
@@ -100,27 +101,54 @@ func HandleHelp(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 }
 
 func HandleInfo(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
-	userInfo, err := services.GetStudentInfo(update.Message.Chat.ID)
+	resp, err := services.GetStudentInfo(update.Message.Chat.ID)
 	if err != nil {
 		response := "Không tìm thấy thông tin đăng nhập."
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
 		bot.Send(msg)
 		return
 	}
-	response := fmt.Sprintf("Thông tin đăng nhập\n________\nHọ và tên: %s\nMSSV: %s", userInfo.Name, userInfo.StudentID)
+	response := fmt.Sprintf("Thông tin đăng nhập\n________\nHọ và tên: %s\nMSSV: %s", resp.Name, resp.ID, resp.Faculty)
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
 	bot.Send(msg)
 }
 
 func HandleGrade(bot *tgbotapi.BotAPI, update tgbotapi.Update, semesterOrCourseID string) {
-	grades, err := services.GetGrades(update.Message.Chat.ID, semesterOrCourseID)
+	resp, err := services.GetGrades(update.Message.Chat.ID, semesterOrCourseID)
 	var response string
 	if err != nil {
-		response = "Không thể lấy dữ liệu điểm."
+		response = "Không thể lấy dữ liệu điểm." + err.Error()
 	} else {
-		response = fmt.Sprintf("Kết quả điểm cho %s:\n________\n", semesterOrCourseID)
-		for _, grade := range grades {
-			response += fmt.Sprintf("%s: %.1f\n", grade.CourseName, grade.Score)
+		response = fmt.Sprintf("Kết quả điểm cho %s:\n________\n%s:\n", semesterOrCourseID, resp.Name)
+
+		if resp.Score.BT != nil {
+			response += fmt.Sprintf("  - BT: %.1f\n", *resp.Score.BT)
+		} else {
+			response += "  - BT: null\n"
+		}
+
+		if resp.Score.TN != nil {
+			response += fmt.Sprintf("  - TN: %.1f\n", *resp.Score.TN)
+		} else {
+			response += "  - TN: null\n"
+		}
+
+		if resp.Score.BTL != nil {
+			response += fmt.Sprintf("  - BTL: %.1f\n", *resp.Score.BTL)
+		} else {
+			response += "  - BTL: null\n"
+		}
+
+		if resp.Score.GK != nil {
+			response += fmt.Sprintf("  - Giữa kỳ: %.1f\n", *resp.Score.GK)
+		} else {
+			response += "  - GK: null\n"
+		}
+
+		if resp.Score.CK != nil {
+			response += fmt.Sprintf("  - CK: %.1f\n", *resp.Score.CK)
+		} else {
+			response += "  - CK: null\n"
 		}
 	}
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
@@ -128,14 +156,45 @@ func HandleGrade(bot *tgbotapi.BotAPI, update tgbotapi.Update, semesterOrCourseI
 }
 
 func HandleAllGrade(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
-	grades, err := services.GetAllGrades()
+	resp, err := services.GetAllGrades()
 	var response string
 	if err != nil {
-		response = "Không thể lấy dữ liệu điểm."
+		response = "Không thể lấy dữ liệu điểm." + err.Error()
 	} else {
-		response = fmt.Sprintf("Kết quả điểm cho %s:\n________\n", semesterOrCourseID)
-		for _, grade := range grades {
-			response += fmt.Sprintf("%s: %.1f\n", grade.CourseName, grade.Score)
+		response = "Kết quả điểm:\n________\n"
+		for _, grade := range resp.AllGrades {
+			response += fmt.Sprintf("Sinh viên: %s\nMSSV: %s\n", grade.Ms, grade.Name)
+
+			if grade.Score.BT != nil {
+				response += fmt.Sprintf("  - BT: %.1f\n", *grade.Score.BT)
+			} else {
+				response += "  - BT: null\n"
+			}
+
+			if grade.Score.TN != nil {
+				response += fmt.Sprintf("  - TN: %.1f\n", *grade.Score.TN)
+			} else {
+				response += "  - TN: null\n"
+			}
+
+			if grade.Score.BTL != nil {
+				response += fmt.Sprintf("  - BTL: %.1f\n", *grade.Score.BTL)
+			} else {
+				response += "  - BTL: null\n"
+			}
+
+			if grade.Score.GK != nil {
+				response += fmt.Sprintf("  - Giữa kỳ: %.1f\n", *grade.Score.GK)
+			} else {
+				response += "  - GK: null\n"
+			}
+
+			if grade.Score.CK != nil {
+				response += fmt.Sprintf("  - CK: %.1f\n", *grade.Score.CK)
+			} else {
+				response += "  - CK: null\n"
+			}
+			response += "________\n"
 		}
 	}
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)

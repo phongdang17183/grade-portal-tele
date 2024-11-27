@@ -10,6 +10,7 @@ type Config struct {
 	APIURL    string
 	DBUser    string
 	BOT_TOKEN string
+	DBURL     string
 }
 
 func LoadConfig() *Config {
@@ -23,6 +24,7 @@ func LoadConfig() *Config {
 		APIURL:    os.Getenv("API_URL"),
 		DBUser:    os.Getenv("DB_USER"),
 		BOT_TOKEN: os.Getenv("BOT_TOKEN"),
+		DBURL:     os.Getenv("DBURL"),
 	}
 
 	if config.BOT_TOKEN == "" {

@@ -1,15 +1,21 @@
 package services
 
 import (
+	"Grade_Portal_TelegramBot/internal/models"
 	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
-	"log"
+	//"io"
+	//"log"
 	"net/http"
 	"time"
 )
+
+type ResLogin struct {
+	ListCourse []string `json:"listCourse"`
+	Token      string   `json:"token"`
+}
 
 type Info struct {
 	ID        string    `json:"id"`
@@ -34,6 +40,9 @@ type Grade struct {
 	Name  string `json:"name"`
 	Score Score  `json:"score"`
 }
+type History struct {
+	CourseID []string `json:"courseId"`
+}
 type Grades struct {
 	Ms    string `json:"ms"`
 	Name  string `json:"name"`
@@ -42,12 +51,14 @@ type Grades struct {
 type AllGrades struct {
 	AllGrades []Grades `json:"all_grades"`
 }
+type MsgResp struct {
+	Msg string `json:"msg"`
+}
 
-// RegisterStudent đăng ký tài khoản sinh viên cho người dùng Telegram
-func RegisterStudent(chatID int64, mssv string, pw string, otp string) bool {
+func RegisterStudent(mssv string, pw string, otp string) (*MsgResp, error) {
 
 	base_url := "https://api.example.com"
-	endpoint := "/register"
+	endpoint := "/resetpassword"
 
 	url := base_url + endpoint
 
@@ -64,34 +75,37 @@ func RegisterStudent(chatID int64, mssv string, pw string, otp string) bool {
 	// Chuyển dữ liệu sang JSON
 	jsonData, err := json.Marshal(data)
 	if err != nil {
-		log.Fatalf("Error encoding JSON: %v", err)
-		return false
+		return nil, fmt.Errorf("error encoding JSON: %w", err)
 	}
 
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer([]byte(jsonData)))
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
 	if err != nil {
-		log.Fatalf("Error creating request: %v", err)
-		return false
+		return nil, fmt.Errorf("error creating request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
 
-	// Gửi request bằng HTTP client
-	client := &http.Client{
-		Timeout: 10 * time.Second, // Timeout sau 10 giây
-	}
+	client := &http.Client{Timeout: 10 * time.Second}
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Fatalf("Error sending request: %v", err)
+		return nil, fmt.Errorf("error sending request: %w", err)
 	}
-
 	defer resp.Body.Close()
 
-	return true
+	// Kiểm tra mã trạng thái HTTP
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+	}
+
+	var msgResp MsgResp
+	if err := json.NewDecoder(resp.Body).Decode(&msgResp); err != nil {
+		return nil, fmt.Errorf("error decoding response: %w", err)
+	}
+
+	return &msgResp, nil
 }
 
-// Hàm lấy OTP xác thực
-func GetOTP(chatID int64, mssv string) bool {
+func GetOTP(mssv string) (*MsgResp, error) {
 
 	base_url := "https://api.example.com"
 	endpoint := "/otp"
@@ -107,33 +121,39 @@ func GetOTP(chatID int64, mssv string) bool {
 	// Chuyển dữ liệu sang JSON
 	jsonData, err := json.Marshal(data)
 	if err != nil {
-		log.Fatalf("Error encoding JSON: %v", err)
-		return false
+		return nil, fmt.Errorf("error encoding JSON: %w", err)
 	}
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer([]byte(jsonData)))
 	if err != nil {
-		log.Fatalf("Error creating request: %v", err)
-		return false
+		return nil, fmt.Errorf("error creating request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
 
-	// Gửi request bằng HTTP client
 	client := &http.Client{
 		Timeout: 10 * time.Second, // Timeout sau 10 giây
 	}
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Fatalf("Error sending request: %v", err)
+		return nil, fmt.Errorf("error sending request: %w", err)
 	}
 	defer resp.Body.Close()
 
-	return true
+	// Kiểm tra mã trạng thái HTTP
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+	}
+
+	var msgResp MsgResp
+	if err := json.NewDecoder(resp.Body).Decode(&msgResp); err != nil {
+		return nil, fmt.Errorf("error decoding response: %w", err)
+	}
+
+	return &msgResp, nil
 }
 
-// Login đăng nhập để bắt đầu sử dụng hệ thống
-func Login(mssv string, pw string) bool {
+func Login(chatID int64, mssv string, pw string) (*ResLogin, error) {
 
 	base_url := "https://api.example.com"
 	endpoint := "/login"
@@ -150,65 +170,86 @@ func Login(mssv string, pw string) bool {
 
 	jsonData, err := json.Marshal(data)
 	if err != nil {
-		log.Fatalf("Error encoding JSON: %v", err)
-		return false
+		return nil, fmt.Errorf("error encoding JSON: %w", err)
 	}
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer([]byte(jsonData)))
 	if err != nil {
-		log.Fatalf("Error creating request: %v", err)
+		return nil, fmt.Errorf("error creating request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
 
-	// Gửi request bằng HTTP client
 	client := &http.Client{
-		Timeout: 10 * time.Second, // Timeout sau 10 giây
+		Timeout: 10 * time.Second,
 	}
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Fatalf("Error sending request: %v", err)
+		return nil, fmt.Errorf("error sending request: %w", err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+	}
+	var resLogin ResLogin
+	if err := json.NewDecoder(resp.Body).Decode(&resLogin); err != nil {
+		return nil, fmt.Errorf("error decoding response: %w", err)
+	}
+	token := models.DBToken{
+		Mssv:   mssv,
+		IDTele: chatID,
+		Token:  resLogin.Token,
+	}
+	fmt.Println(token)
+	return &resLogin, nil
+}
+
+func GetStudentInfo(chatID int64) (*Info, error) {
+	baseURL := "https://api.example.com"
+	endpoint := "/info"
+	url := baseURL + endpoint
+
+	client := &http.Client{
+		Timeout: 10 * time.Second,
+	}
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %w", err)
+	}
+
+	token := token[chatID]
+	req.Header.Set("Authorization", `Bearer `+token)
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %w", err)
 	}
 	defer resp.Body.Close()
 
-	// Đọc dữ liệu từ response
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatalf("Error reading response body: %v", err)
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 	}
 
-	// In ra kết quả
-	fmt.Println(string(body))
+	var info Info
+	if err := json.NewDecoder(resp.Body).Decode(&info); err != nil {
+		return nil, fmt.Errorf("error decoding response: %w", err)
+	}
 
-	return true
+	return &info, nil
 }
 
-// GetStudentInfo lấy thông tin sinh viên dựa trên chatID
-func GetStudentInfo(chatID int64) (Student, error) {
-	student, exists := users[chatID]
-	if !exists {
-		return Student{}, errors.New("student not found")
-	}
+func GetGrades(chatID int64, semesterOrCourseID string) (*Grade, error) {
 
-	return student, nil
-}
+	baseURL := "https://api.example.com"
+	endpoint := `/resultScore/getmark/` + semesterOrCourseID
 
-// GetGrades lấy danh sách điểm của sinh viên dựa trên chatID và học kỳ hoặc mã môn học
-func GetGrades(chatID int64, semesterOrCourseID string) ([]Grade, error) {
-	studentGrades, exists := grades[chatID]
-	if !exists {
-		return nil, errors.New("grades not found")
-	}
+	url := baseURL + endpoint
 
-	base_url := "https://api.example.com"
-	endpoint := "/register"
-
-	url := base_url + endpoint
-
-	// Tạo HTTP GET request
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		log.Fatalf("Error creating request: %v", err)
+		return nil, fmt.Errorf("error creating request: %w", err)
 	}
 
 	// token := GetToken(chatID) // can hien thuc TODO
@@ -216,46 +257,49 @@ func GetGrades(chatID int64, semesterOrCourseID string) ([]Grade, error) {
 
 	// Thêm Authorization header với biến token
 	req.Header.Set("Authorization", "Bearer "+token)
+	req.Header.Set("Content-Type", "application/json")
 
-	// Gửi request
 	client := &http.Client{
-		Timeout: 10 * time.Second, // Timeout sau 10 giây
+		Timeout: 10 * time.Second,
 	}
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Fatalf("Error sending request: %v", err)
+		return nil, fmt.Errorf("error sending request: %w", err)
 	}
 	defer resp.Body.Close()
 
-	// Kiểm tra mã trạng thái
 	if resp.StatusCode != http.StatusOK {
-		log.Fatalf("Request failed with status: %d", resp.StatusCode)
+		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 	}
 
-	// Đọc dữ liệu từ response
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatalf("Error reading response body: %v", err)
+	var grades Grade
+	if err := json.NewDecoder(resp.Body).Decode(&grades); err != nil {
+		return nil, fmt.Errorf("error decoding response: %w", err)
 	}
 
-	// In ra kết quả
-	fmt.Println("Response:", string(body))
-
-	return studentGrades, nil
+	return &grades, nil
 }
 
-func GetAllGrades(apiURL string, token string) ([]byte, error) {
-	// Tạo một HTTP client
-	client := &http.Client{}
+func GetAllGrades() (*AllGrades, error) {
+
+	baseURL := "https://api.example.com"
+	endpoint := "/resultScore/getmark"
+	url := baseURL + endpoint
 
 	// Tạo HTTP request với phương thức GET
-	req, err := http.NewRequest("GET", apiURL, nil)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %v", err)
 	}
 
 	// Thêm header Authorization với token
+	token := token[chatID]
 	req.Header.Add("Authorization", "Bearer "+token)
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{
+		Timeout: 10 * time.Second,
+	}
 
 	// Gửi request
 	resp, err := client.Do(req)
@@ -266,24 +310,21 @@ func GetAllGrades(apiURL string, token string) ([]byte, error) {
 
 	// Kiểm tra status code của response
 	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body)
-		return nil, fmt.Errorf("unexpected status code: %d, response: %s", resp.StatusCode, string(body))
-	}
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read response body: %v", err)
+		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 	}
 
-	return body, nil
+	var allGrades AllGrades
+	if err := json.NewDecoder(resp.Body).Decode(&allGrades); err != nil {
+	}
+
+	return &allGrades, nil
 }
 
-// ClearHistory xóa lịch sử tra cứu của sinh viên dựa trên chatID
 func ClearHistory(chatID int64) {
 	delete(history, chatID)
 }
 
-// GetHistory lấy lịch sử tra cứu của sinh viên dựa trên chatID
-func GetHistory(chatID int64) ([]Grade, error) {
+func GetHistory(chatID int64) (*History, error) {
 	studentHistory, exists := history[chatID]
 	if !exists {
 		return nil, errors.New("history not found")
