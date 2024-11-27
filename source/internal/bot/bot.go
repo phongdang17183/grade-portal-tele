@@ -3,7 +3,6 @@ package bot
 
 import (
 	"Grade_Portal_TelegramBot/config"
-	"Grade_Portal_TelegramBot/internal/handlers"
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
@@ -33,7 +32,7 @@ func Start() {
 	// Vòng lặp để xử lý các bản cập nhật
 	for update := range updates {
 		if update.Message != nil {
-			handlers.HandleUpdate(bot, update)
+			HandleUpdate(bot, update)
 		}
 	}
 

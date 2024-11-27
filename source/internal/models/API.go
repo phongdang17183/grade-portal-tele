@@ -17,9 +17,11 @@ type Info struct {
 	CreatedBy string    `json:"CreatedBy"`
 	ExpiresAt time.Time `json:"ExpiredAt"`
 }
+
 type InfoSV struct {
 	InfoSv Info `json:"user"`
 }
+
 type Score struct {
 	BT  *float64 `json:"BT"`
 	TN  *float64 `json:"TN"`
