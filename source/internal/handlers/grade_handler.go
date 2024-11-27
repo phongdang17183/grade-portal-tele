@@ -108,7 +108,7 @@ func HandleInfo(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 		bot.Send(msg)
 		return
 	}
-	response := fmt.Sprintf("Thông tin đăng nhập\n________\nHọ và tên: %s\nMSSV: %s", resp.Name, resp.ID, resp.Faculty)
+	response := fmt.Sprintf("Thông tin đăng nhập\n________\nHọ và tên: %s\nMSSV: %s %s", resp.Name, resp.ID, resp.Faculty)
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
 	bot.Send(msg)
 }
@@ -209,16 +209,17 @@ func HandleClear(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 }
 
 func HandleHistory(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
-	history, err := services.GetHistory(update.Message.Chat.ID)
-	var response string
-	if err != nil {
-		response = "Không có lịch sử tra cứu nào."
-	} else {
-		response = "Lịch sử tra cứu:\n"
-		for _, entry := range history {
-			response += fmt.Sprintf("%s: %.1f\n", entry.CourseName, entry.Score)
-		}
-	}
-	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
-	bot.Send(msg)
+	// history, err := services.GetHistory(update.Message.Chat.ID)
+	// var response string
+	// if err != nil {
+	// 	response = "Không có lịch sử tra cứu nào."
+	// } else {
+	// 	response = "Lịch sử tra cứu:\n"
+	// 	for _, entry := range history {
+	// 		response += fmt.Sprintf("%s: %.1f\n", entry.CourseName, entry.Score)
+	// 	}
+	// }
+	// msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
+	// bot.Send(msg)
+	fmt.Print("History")
 }
