@@ -13,7 +13,7 @@ type Config struct {
 }
 
 func LoadConfig() *Config {
-	log.Println("Loading .env file from Grade_Portal_TelegramBot/config/.env...")
+	log.Println("Loading .env file...")
 	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatalf("Error loading .env file: %v", err)
