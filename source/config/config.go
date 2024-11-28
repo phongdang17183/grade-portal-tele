@@ -14,13 +14,8 @@ type Config struct {
 }
 
 func LoadConfig() *Config {
-<<<<<<< Updated upstream
-	log.Println("Loading .env file from Grade_Portal_TelegramBot/source/.env...")
-	err := godotenv.Load(".env")
-=======
 	log.Println("Loading .env file...")
 	err := godotenv.Load("./.env")
->>>>>>> Stashed changes
 	if err != nil {
 		log.Fatalf("Error loading .env file: %v", err)
 	}

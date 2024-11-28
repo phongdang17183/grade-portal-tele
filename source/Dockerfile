@@ -15,10 +15,7 @@ RUN chmod +x /entrypoint.sh
 # Expose port
 EXPOSE 8080
 
-<<<<<<< Updated upstream
-# Start the application
-=======
+
 # Sử dụng script khởi động trước khi chạy ứng dụng
 ENTRYPOINT ["/entrypoint.sh"]
->>>>>>> Stashed changes
 CMD ["./main"]
