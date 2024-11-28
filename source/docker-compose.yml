@@ -1,9 +1,9 @@
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    # image: tele_test
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    image: test-docker-build
     env_file:
       - .env
     ports:
