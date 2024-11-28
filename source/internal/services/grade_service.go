@@ -4,8 +4,8 @@ import (
 	config "Grade_Portal_TelegramBot/config"
 	"Grade_Portal_TelegramBot/internal/models"
 	"encoding/json"
-	"log"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 )
@@ -13,11 +13,11 @@ import (
 var cfg = config.LoadConfig()
 
 func GetStudentInfo(chatID int64) (*struct {
-											Email     string `json:"Email"`
-											Name      string `json:"Name"`
-											Ms        string `json:"Ms"`
-											Faculty   string `json:"Faculty"`
-										}, error) {
+	Email   string `json:"Email"`
+	Name    string `json:"Name"`
+	Ms      string `json:"Ms"`
+	Faculty string `json:"Faculty"`
+}, error) {
 	endpoint := "/info"
 	url := cfg.APIURL + endpoint
 
@@ -54,15 +54,15 @@ func GetStudentInfo(chatID int64) (*struct {
 	}
 
 	resInfo := struct {
-		Email     string `json:"Email"`
-		Name      string `json:"Name"`
-		Ms        string `json:"Ms"`
-		Faculty   string `json:"Faculty"`
+		Email   string `json:"Email"`
+		Name    string `json:"Name"`
+		Ms      string `json:"Ms"`
+		Faculty string `json:"Faculty"`
 	}{
-		Email:     info.InfoSv.Email,
-		Name:      info.InfoSv.Name,
-		Ms:        info.InfoSv.Ms,
-		Faculty:   info.InfoSv.Faculty,
+		Email:   info.InfoSv.Email,
+		Name:    info.InfoSv.Name,
+		Ms:      info.InfoSv.Ms,
+		Faculty: info.InfoSv.Faculty,
 	}
 	return &resInfo, nil
 }
@@ -78,9 +78,7 @@ func GetGrades(chatID int64, semesterOrCourseID string) (*models.Grade, error) {
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
 
-	// token := GetToken(chatID) // can hien thuc TODO
 	token, err := GetTokenByChatID(chatID, config.MongoClient)
-	fmt.Println(token)
 	// Thêm Authorization header với biến token
 	if err != nil {
 		return nil, fmt.Errorf("error getting token: %w", err)
@@ -106,6 +104,7 @@ func GetGrades(chatID int64, semesterOrCourseID string) (*models.Grade, error) {
 	if err := json.NewDecoder(resp.Body).Decode(&grades); err != nil {
 		return nil, fmt.Errorf("error decoding response: %w", err)
 	}
+
 	res := AddCourseToHistory(chatID, semesterOrCourseID)
 	if res != nil {
 		log.Fatalf("Lỗi khi thêm khóa học: %v", err)

@@ -2,11 +2,12 @@ package services
 
 import (
 	"Grade_Portal_TelegramBot/config"
+	"Grade_Portal_TelegramBot/internal/models"
 	"context"
 	"fmt"
 	"log"
 	"time"
-	"Grade_Portal_TelegramBot/internal/models"
+
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -29,12 +30,10 @@ func ClearHistory(chatID int64) bool {
 func GetHistory(chatID int64) (*models.DBHistory, error) {
 	// Lấy lịch sử từ chatID
 	history, err := GetHistoryByChatID(chatID)
-	fmt.Println(history)
 	if err != nil {
 		return nil, err
 	}
 
-	// Trả về lịch sử
 	return history, nil
 }
 
@@ -44,9 +43,8 @@ func GetHistoryByChatID(chatID int64) (*models.DBHistory, error) {
 
 	collection := config.MongoClient.Database("Do_an").Collection("HISTORY")
 
-	filter := map[string]interface{}{
-		"chat_id": chatID, 
-	}
+	filter := map[string]interface{}{"chat_id": chatID}
+
 	var result models.DBHistory
 
 	err := collection.FindOne(ctx, filter).Decode(&result)
@@ -67,30 +65,23 @@ func AddCourseToHistory(chatID int64, course string) error {
 
 	collection := config.MongoClient.Database("Do_an").Collection("HISTORY")
 
-	// Tìm tài liệu theo ChatID
 	filter := map[string]interface{}{"chat_id": chatID}
-
-	// Kiểm tra xem tài liệu có tồn tại không
 	var history models.DBHistory
 	err := collection.FindOne(ctx, filter).Decode(&history)
-	if err != nil {
-		// Nếu không tìm thấy tài liệu, tạo tài liệu mới
-		if err == mongo.ErrNoDocuments {
-			newHistory := map[string]interface{}{
-				"chat_id":     chatID,
-				"list_course": []string{course},
-			}
-			_, insertErr := collection.InsertOne(ctx, newHistory)
-			if insertErr != nil {
-				return fmt.Errorf("error inserting new history: %w", insertErr)
-			}
-			fmt.Println("Thêm lịch sử mới thành công!")
-			return nil
+	// Nếu không tìm thấy tài liệu, tạo tài liệu mới
+	if err == mongo.ErrNoDocuments {
+		newHistory := map[string]interface{}{
+			"chat_id":     chatID,
+			"list_course": []string{course},
 		}
-		return fmt.Errorf("error finding history: %w", err)
-	}
 
-	// Nếu tài liệu đã tồn tại, kiểm tra xem khóa học đã có chưa
+		_, insertErr := collection.InsertOne(ctx, newHistory)
+		if insertErr != nil {
+			return fmt.Errorf("error inserting new history: %w", insertErr)
+		}
+		return nil
+	}
+	
 	for _, c := range history.ListCourse {
 		if c == course {
 			fmt.Println("Khóa học đã tồn tại, không cần thêm lại!")
@@ -98,18 +89,15 @@ func AddCourseToHistory(chatID int64, course string) error {
 		}
 	}
 
-	// Nếu khóa học chưa có, thêm vào danh sách
 	update := map[string]interface{}{
 		"$push": map[string]interface{}{
 			"list_course": course,
 		},
-	}	
+	}
 
 	_, updateErr := collection.UpdateOne(ctx, filter, update)
 	if updateErr != nil {
 		return fmt.Errorf("error updating history: %w", updateErr)
 	}
-
-	fmt.Println("Thêm khóa học thành công!")
 	return nil
 }

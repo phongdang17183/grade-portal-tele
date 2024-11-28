@@ -154,7 +154,7 @@ func Login(chatID int64, mssv string, pw string) (*models.ResLogin, error) {
 	}
 	token := models.DBToken{
 		Mssv:   mssv,
-		IDTele: chatID,
+		ChatID: chatID,
 		Token:  resLogin.Token,
 	}
 
@@ -165,7 +165,7 @@ func Login(chatID int64, mssv string, pw string) (*models.ResLogin, error) {
 	filter := map[string]interface{}{"mssv": token.Mssv} // Kiểm tra dựa trên MSSV
 	update := map[string]interface{}{
 		"$set": map[string]interface{}{
-			"id_tele": token.IDTele,
+			"chat_id": token.ChatID,
 			"token":   token.Token,
 		},
 	}
@@ -184,21 +184,18 @@ func Login(chatID int64, mssv string, pw string) (*models.ResLogin, error) {
 }
 
 func GetTokenByChatID(chatID int64, client *mongo.Client) (*models.DBToken, error) {
-	// Thiết lập bối cảnh
+	
+	var token models.DBToken
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	// Kết nối tới collection
 	collection := client.Database("Do_an").Collection("TOKEN")
-
 	// Bộ lọc tìm kiếm
-	filter := map[string]interface{}{"id_tele": chatID}
+	filter := map[string]interface{}{"chat_id": chatID}
 
-	// Kết quả để lưu token tìm được
-	var token models.DBToken
-
-	// Truy vấn dữ liệu
 	err := collection.FindOne(ctx, filter).Decode(&token)
+	fmt.Println(token)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, fmt.Errorf("no token found for chatID %d", chatID)

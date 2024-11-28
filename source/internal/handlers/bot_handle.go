@@ -4,6 +4,7 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"Grade_Portal_TelegramBot/internal/services"
 	"fmt"
+	"encoding/json"
 )
 
 
@@ -16,7 +17,7 @@ func HandleStart(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 		"/history - xem lịch sử điểm\n"+
 		"/clear - xóa lịch sử điểm\n"+
 		"/info - xem thông tin tài khoản\n"+
-		"/getOTP - lấy OTP để đăng nhập\n"+
+		"/getOTP - lấy OTP để đăng ký hoặc đổi mật khẩu\n"+
 		"/register [MSSV] [password] [OTP] - đăng ký tài khoản\n"+
 		"/resetPassWord [MSSV] [password] [OTP] - đổi mật khẩu\n"+
 		"/help - để biết thêm các lệnh khác." ,
@@ -56,14 +57,16 @@ func HandleClear(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 }
 
 func HandleHistory(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
-	_, err := services.GetHistory(update.Message.Chat.ID)
-	var response string
+	response, err := services.GetHistory(update.Message.Chat.ID)
+	var msg tgbotapi.MessageConfig
 	if err != nil {
-		response = "Không có lịch sử tra cứu nào."
+		msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Không có lịch sử tra cứu nào.")
 	} else {
-		response = "res"
+		jsonStr, _ := json.Marshal(response)
+		msgText := fmt.Sprintf("```json\n%s\n```", string(jsonStr))
+		msg = tgbotapi.NewMessage(update.Message.Chat.ID, msgText)
+		msg.ParseMode = "MarkdownV2"
 	}
-	//fmt.Println(res)
-	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
+
 	bot.Send(msg)
 }

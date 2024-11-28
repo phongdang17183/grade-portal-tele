@@ -34,3 +34,4 @@ tmp/
 .DS_Store
 
 .idea
+.github/workflows/ci.yml

@@ -8,21 +8,19 @@ import (
 
 type Config struct {
 	APIURL    string
-	DBUser    string
 	BOT_TOKEN string
 	DBURL     string
 }
 
 func LoadConfig() *Config {
 	log.Println("Loading .env file from Grade_Portal_TelegramBot/config/.env...")
-	err := godotenv.Load("config/.env")
+	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatalf("Error loading .env file: %v", err)
 	}
 
 	config := &Config{
 		APIURL:    os.Getenv("API_URL"),
-		DBUser:    os.Getenv("DB_USER"),
 		BOT_TOKEN: os.Getenv("BOT_TOKEN"),
 		DBURL:     os.Getenv("DBURL"),
 	}
