@@ -3,9 +3,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    # image: tele_test
-    env_file:
-      - .env
     ports:
       - "8080:8080" 
     container_name: grade-portal-tele

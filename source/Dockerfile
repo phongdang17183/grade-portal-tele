@@ -1,32 +1,24 @@
-# Stage 1: Build
-FROM golang:1.23 
-# AS builder
+FROM golang:1.23
 
 WORKDIR /app
 
-# Copy go.mod and go.sum and download dependencies
+# Copy mã nguồn và build ứng dụng
 COPY go.* ./
 RUN go mod download
-
-# Copy source code and build the binary
-COPY . . 
+COPY . .
 RUN go build -o main main.go
 
-# Stage 2: Deploy
-# FROM debian:rc-buggy-20241111
+# Thiết lập Entrypoint Script
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
-# WORKDIR /app
-
-# # Install locales and configure UTF-8
-# RUN apt-get update && apt-get install -y locales && rm -rf /var/lib/apt/lists/* \
-# 	&& localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
-# ENV LANG en_US.utf8
-
-
-# # Copy the built binary from the builder stage
-# COPY --from=builder /app/main .
-
+# Expose port
 EXPOSE 8080
 
+<<<<<<< Updated upstream
 # Start the application
+=======
+# Sử dụng script khởi động trước khi chạy ứng dụng
+ENTRYPOINT ["/entrypoint.sh"]
+>>>>>>> Stashed changes
 CMD ["./main"]
