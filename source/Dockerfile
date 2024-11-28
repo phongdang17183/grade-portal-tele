@@ -8,14 +8,18 @@ RUN go mod download
 COPY . .
 RUN go build -o main cmd/api/main.go
 
-# FROM debian:bullseye-slim
+FROM alpine:latest
 
-# WORKDIR /app
+WORKDIR /app
 
-# RUN apt-get update && apt-get install -y ca-certificates && \
-#     rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
 
-# COPY --from=builder /app/main .
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends mysql-client \
+    && rm -rf /var/lib/apt/lists/*
+    
+COPY --from=builder /app/main .
 
 EXPOSE 8080
 
