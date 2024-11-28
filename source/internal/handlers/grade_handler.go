@@ -8,7 +8,6 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-
 func HandleInfo(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	resp, err := services.GetStudentInfo(update.Message.Chat.ID)
 	if err != nil {
@@ -68,6 +67,11 @@ func HandleGrade(bot *tgbotapi.BotAPI, update tgbotapi.Update, semesterOrCourseI
 	}
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
 	bot.Send(msg)
+
+	// msgText := fmt.Sprintf("```json\n%s\n```", response)
+	// msg := tgbotapi.NewMessage(update.Message.Chat.ID, msgText)
+	// msg.ParseMode = "MarkdownV2"
+	// bot.Send(msg)
 }
 
 func HandleAllGrade(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
@@ -114,4 +118,9 @@ func HandleAllGrade(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	}
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
 	bot.Send(msg)
+
+	// msgText := fmt.Sprintf("```json\n%s\n```", response)
+	// msg := tgbotapi.NewMessage(update.Message.Chat.ID, msgText)
+	// msg.ParseMode = "MarkdownV2"
+	// bot.Send(msg)
 }

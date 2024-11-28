@@ -2,7 +2,7 @@ package models
 
 type DBToken struct {
 	Mssv   string `json:"mssv"`
-	IDTele int64  `json:"id_tele"`
+	ChatID int64  `json:"chat_id"`
 	Token  string `json:"token"`
 }
 type DBHistory struct {
