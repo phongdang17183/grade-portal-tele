@@ -1,11 +1,11 @@
 package models
 
 type DBToken struct {
-	Mssv   string `json:"mssv"`
-	ChatID int64  `json:"chat_id"`
-	Token  string `json:"token"`
+	Mssv   string `bson:"mssv"`
+	ChatID int64  `bson:"chat_id"`
+	Token  string `bson:"token"`
 }
 type DBHistory struct {
-	ChatID     int64    `json:"chat_id"`
-	ListCourse []string `json:"list_course"`
+	ChatID     int64    `bson:"chat_id"`
+	ListCourse []string `bson:"list_course"`
 }

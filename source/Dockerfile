@@ -6,7 +6,7 @@ COPY go.* ./
 RUN go mod download
 
 COPY . .
-RUN go build -o main cmd/api/main.go
+RUN go build -o main main.go
 
 # FROM debian:bullseye-slim
 

@@ -195,7 +195,7 @@ func GetTokenByChatID(chatID int64, client *mongo.Client) (*models.DBToken, erro
 	filter := map[string]interface{}{"chat_id": chatID}
 
 	err := collection.FindOne(ctx, filter).Decode(&token)
-	
+	fmt.Println(token)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, fmt.Errorf("no token found for chatID %d", chatID)

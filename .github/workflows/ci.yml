@@ -47,5 +47,5 @@ jobs:
         script: |
           cd /path/to/project
           git pull
-          go build
-          systemctl restart your-service 
+          docker-compose down
+          docker-compose up -d 

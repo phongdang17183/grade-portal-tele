@@ -79,7 +79,6 @@ func GetGrades(chatID int64, semesterOrCourseID string) (*models.Grade, error) {
 	}
 
 	token, err := GetTokenByChatID(chatID, config.MongoClient)
-	fmt.Println(token.ChatID)
 	// Thêm Authorization header với biến token
 	if err != nil {
 		return nil, fmt.Errorf("error getting token: %w", err)

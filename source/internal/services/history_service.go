@@ -34,7 +34,6 @@ func GetHistory(chatID int64) (*models.DBHistory, error) {
 		return nil, err
 	}
 
-	// Trả về lịch sử
 	return history, nil
 }
 
@@ -44,9 +43,8 @@ func GetHistoryByChatID(chatID int64) (*models.DBHistory, error) {
 
 	collection := config.MongoClient.Database("Do_an").Collection("HISTORY")
 
-	filter := map[string]interface{}{
-		"chat_id": chatID,
-	}
+	filter := map[string]interface{}{"chat_id": chatID}
+
 	var result models.DBHistory
 
 	err := collection.FindOne(ctx, filter).Decode(&result)
@@ -67,18 +65,11 @@ func AddCourseToHistory(chatID int64, course string) error {
 
 	collection := config.MongoClient.Database("Do_an").Collection("HISTORY")
 
-	// Tìm tài liệu theo ChatID
-
 	filter := map[string]interface{}{"chat_id": chatID}
-
-	// Kiểm tra xem tài liệu có tồn tại không
 	var history models.DBHistory
 	err := collection.FindOne(ctx, filter).Decode(&history)
-	fmt.Println(err)
-
 	// Nếu không tìm thấy tài liệu, tạo tài liệu mới
 	if err == mongo.ErrNoDocuments {
-		// Tạo document mới với định dạng JSON
 		newHistory := map[string]interface{}{
 			"chat_id":     chatID,
 			"list_course": []string{course},
@@ -88,11 +79,9 @@ func AddCourseToHistory(chatID int64, course string) error {
 		if insertErr != nil {
 			return fmt.Errorf("error inserting new history: %w", insertErr)
 		}
-		fmt.Println(newHistory)
-		fmt.Println("Thêm lịch sử mới thành công!")
 		return nil
 	}
-
+	
 	for _, c := range history.ListCourse {
 		if c == course {
 			fmt.Println("Khóa học đã tồn tại, không cần thêm lại!")
@@ -100,7 +89,6 @@ func AddCourseToHistory(chatID int64, course string) error {
 		}
 	}
 
-	// Nếu khóa học chưa có, thêm vào danh sách
 	update := map[string]interface{}{
 		"$push": map[string]interface{}{
 			"list_course": course,
