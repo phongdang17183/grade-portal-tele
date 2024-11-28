@@ -7,12 +7,12 @@
 ## Tự đánh giá tiến độ từng thành viên
 | STT | Tên thành viên               | Vai trò | MSSV     | Tuần 1 | Tuần 2 | Tuần 3 | Tuần 4 | Tuần 5 | Tuần 6 | Tuần 7 | Tuần 8 | Tuần 9 | Tuần 10 |
 |-----|------------------------------|---------|----------| ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------- |
-| 1   | Nguyễn Lê Hoàng Phúc         | PO      | 2212629  | 🟢     | 🟢    | GK     | -      | -      | -      | -      | -      | -      | -       |
-| 2   | Đặng Quốc Phong              | Dev     | 2212548  | 🟢     | 🟢    | GK     | -      | -      | -      | -      | -      | -      | -       |
-| 3   | Lê Vĩnh Nghiệp               | Dev     | 2212213  | 🟢     | 🟢    | GK     | -      | -      | -      | -      | -      | -      | -       |
-| 4   | Trần Minh Quân               | Dev     | 2212823  | 🟢     | 🟢    | GK     | -      | -      | -      | -      | -      | -      | -       |
-| 5   | Trần Thanh Phong             | Dev     | 2212571  | 🟢     | 🟢    | GK     | -      | -      | -      | -      | -      | -      | -       |
-| 6   |	Trương Anh Tuấn              | Dev     | 2213810  | 🟢     | 🟢    | GK     | -      | -      | -      | -      | -      | -      | -       |
+| 1   | Nguyễn Lê Hoàng Phúc         | PO      | 2212629  | 🟢     | 🟢    | GK     | 🟢     | 🟢    | 🟢     | 🟢    | 🟢    | 🟢     | 🟢     |
+| 2   | Đặng Quốc Phong              | Dev     | 2212548  | 🟢     | 🟢    | GK     | 🟢     | 🟢    | 🟢     | 🟢    | 🟢    | 🟢     | 🟢     |
+| 3   | Lê Vĩnh Nghiệp               | Dev     | 2212213  | 🟢     | 🟢    | GK     | 🟢     | 🟢    | 🟢     | 🟢    | 🟢    | 🟢     | 🟢     |
+| 4   | Trần Minh Quân               | Dev     | 2212823  | 🟢     | 🟢    | GK     | 🟢     | 🟢    | 🟢     | 🟢    | 🟢    | 🟢     | 🟢     |
+| 5   | Trần Thanh Phong             | Dev     | 2212571  | 🟢     | 🟢    | GK     | 🟢     | 🟢    | 🟢     | 🟢    | 🟢    | 🟢     | 🟢     |
+| 6   |	Trương Anh Tuấn              | Dev     | 2213810  | 🟢     | 🟢    | GK     | 🟢     | 🟢    | 🟢     | 🟢    | 🟢    | 🟢     | 🟢     |
 
 - Chú thích:
     - 🟢 nếu hoàn thành tốt (10/10) công việc của nhóm giao trong tuần
