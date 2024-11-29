@@ -10,9 +10,8 @@ import (
 	"time"
 )
 
-var cfg = config.LoadConfig()
 
-func GetStudentInfo(chatID int64) (*struct {
+func GetStudentInfo(chatID int64, cfg *config.Config) (*struct {
 	Email   string `json:"Email"`
 	Name    string `json:"Name"`
 	Ms      string `json:"Ms"`
@@ -67,7 +66,7 @@ func GetStudentInfo(chatID int64) (*struct {
 	return &resInfo, nil
 }
 
-func GetGrades(chatID int64, semesterOrCourseID string) (*models.Grade, error) {
+func GetGrades(chatID int64, semesterOrCourseID string, cfg *config.Config) (*models.Grade, error) {
 
 	endpoint := `/resultScore/getmark/` + semesterOrCourseID
 
@@ -79,7 +78,6 @@ func GetGrades(chatID int64, semesterOrCourseID string) (*models.Grade, error) {
 	}
 
 	token, err := GetTokenByChatID(chatID, config.MongoClient)
-	fmt.Println(token.ChatID)
 	// Thêm Authorization header với biến token
 	if err != nil {
 		return nil, fmt.Errorf("error getting token: %w", err)
@@ -113,7 +111,7 @@ func GetGrades(chatID int64, semesterOrCourseID string) (*models.Grade, error) {
 	return &grades, nil
 }
 
-func GetAllGrades(chatID int64) (*models.AllGrades, error) {
+func GetAllGrades(chatID int64, cfg *config.Config) (*models.AllGrades, error) {
 
 	endpoint := "/resultScore/getmark"
 	url := cfg.APIURL + endpoint
