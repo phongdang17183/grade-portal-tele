@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    # image: tele_test
+    # image: thanhphong
     env_file:
       - .env
     ports:

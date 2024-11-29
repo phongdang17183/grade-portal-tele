@@ -1,9 +1,10 @@
 package config
 
 import (
-	"github.com/joho/godotenv"
 	"log"
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -14,9 +15,11 @@ type Config struct {
 
 func LoadConfig() *Config {
 	log.Println("Loading .env file...")
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatalf("Error loading .env file: %v", err)
+	err1 := godotenv.Load(".env")
+	if err1 != nil {
+		// log.Fatalf("Error loading .env file: %v", err)
+		println("Error loading .env file aaaaa: %v", err1)
+
 	}
 
 	config := &Config{

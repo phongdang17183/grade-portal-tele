@@ -4,13 +4,16 @@ package bot
 import (
 	"Grade_Portal_TelegramBot/config"
 	"fmt"
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
+
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 func Start() {
 	// Dùng hàm LoadConfig() định nghĩa trong file config.go - package config.
+	fmt.Println("goi o day 1")
 	cfg := config.LoadConfig()
+	fmt.Println("goi o day 2")
 	// Khởi tạo bot
 	bot, err := tgbotapi.NewBotAPI(cfg.BOT_TOKEN)
 	if err != nil {
