@@ -1,30 +1,26 @@
 # Stage 1: Build
-FROM golang:1.23
-# AS builder
+FROM golang:1.23 AS builder
 
 WORKDIR /app
 
 # Copy go.mod and go.sum and download dependencies
-COPY go.* ./
+COPY go.mod go.sum ./
 RUN go mod download
 
-# Copy source code and build the binary
-COPY . . 
-RUN go build -o main main.go
+# Copy the source code and build the binary
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build -o main main.go
 
-# Stage 2: Deploy
+# Stage 2: Run
+FROM alpine:latest
 
-# FROM debian:rc-buggy-20241111
+# Thiết lập thư mục làm việc
+WORKDIR /root/
 
-# WORKDIR /app
+# Sao chép binary từ giai đoạn build
+COPY --from=builder /app/main .
 
-# RUN apt-get update && apt-get install -y locales && rm -rf /var/lib/apt/lists/* \
-# 	&& localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
-# ENV LANG en_US.utf8
-
-
-# COPY --from=builder /app/main .
-
+# Expose the port
 EXPOSE 8080
 
 # Start the application
