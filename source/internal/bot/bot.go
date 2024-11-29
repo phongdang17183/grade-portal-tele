@@ -32,7 +32,7 @@ func Start() {
 	// Vòng lặp để xử lý các bản cập nhật
 	for update := range updates {
 		if update.Message != nil {
-			HandleUpdate(bot, update)
+			HandleUpdate(bot, update, cfg)
 		}
 	}
 

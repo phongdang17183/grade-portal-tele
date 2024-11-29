@@ -1,21 +1,26 @@
-FROM golang:1.23
+FROM golang:1.23 AS builder
 
 WORKDIR /app
 
-# Copy mã nguồn và build ứng dụng
-COPY go.* ./
+# Copy go.mod and go.sum and download dependencies
+COPY go.mod go.sum ./
 RUN go mod download
+
+# Copy the source code and build the binary
 COPY . .
-RUN go build -o main main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -o main main.go
 
-# Thiết lập Entrypoint Script
-# COPY entrypoint.sh /entrypoint.sh
-# RUN chmod +x /entrypoint.sh
+# Stage 2: Run
+FROM alpine:latest
 
-# Expose port
+# Thiết lập thư mục làm việc
+WORKDIR /root/
+
+# Sao chép binary từ giai đoạn build
+COPY --from=builder /app/main .
+
+# Expose the port
 EXPOSE 8080
 
-
-# Sử dụng script khởi động trước khi chạy ứng dụng
-# ENTRYPOINT ["/entrypoint.sh"]
+# Start the application
 CMD ["./main"]

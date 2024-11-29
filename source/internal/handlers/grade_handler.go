@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"Grade_Portal_TelegramBot/config"
 	"Grade_Portal_TelegramBot/internal/services"
 	"encoding/json"
 	"fmt"
@@ -8,8 +9,8 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-func HandleInfo(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
-	resp, err := services.GetStudentInfo(update.Message.Chat.ID)
+func HandleInfo(bot *tgbotapi.BotAPI, update tgbotapi.Update, cfg *config.Config) {
+	resp, err := services.GetStudentInfo(update.Message.Chat.ID, cfg)
 	if err != nil {
 		response := "Không tìm thấy thông tin đăng nhập. Hãy đăng nhập trước khi sử dụng dịch vụ: " + err.Error()
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
@@ -26,8 +27,8 @@ func HandleInfo(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	bot.Send(msg)
 }
 
-func HandleGrade(bot *tgbotapi.BotAPI, update tgbotapi.Update, semesterOrCourseID string) {
-	resp, err := services.GetGrades(update.Message.Chat.ID, semesterOrCourseID)
+func HandleGrade(bot *tgbotapi.BotAPI, update tgbotapi.Update, semesterOrCourseID string, cfg *config.Config) {
+	resp, err := services.GetGrades(update.Message.Chat.ID, semesterOrCourseID, cfg)
 	var response string
 
 	if err != nil {
@@ -47,8 +48,8 @@ func HandleGrade(bot *tgbotapi.BotAPI, update tgbotapi.Update, semesterOrCourseI
 
 }
 
-func HandleAllGrade(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
-	resp, err := services.GetAllGrades(update.Message.Chat.ID)
+func HandleAllGrade(bot *tgbotapi.BotAPI, update tgbotapi.Update, cfg *config.Config) {
+	resp, err := services.GetAllGrades(update.Message.Chat.ID, cfg)
 	var response string
 	if err != nil {
 		response = "Không thể lấy dữ liệu điểm." + err.Error()
