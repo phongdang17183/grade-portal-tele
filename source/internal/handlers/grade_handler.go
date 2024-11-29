@@ -32,46 +32,19 @@ func HandleGrade(bot *tgbotapi.BotAPI, update tgbotapi.Update, semesterOrCourseI
 
 	if err != nil {
 		response = "Không thể lấy dữ liệu điểm." + err.Error()
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
+		bot.Send(msg)
 	} else {
-		response = fmt.Sprintf("Kết quả điểm cho %s:\n________\n%s:\n", semesterOrCourseID, resp.Name)
-
-		if resp.Score.BT != nil {
-			response += fmt.Sprintf("  - BT: %.1f\n", *resp.Score.BT)
-		} else {
-			response += "  - BT: null\n"
+		response, err := json.MarshalIndent(resp, "", "  ")
+		if err != nil {
+			fmt.Println(err)
 		}
-
-		if resp.Score.TN != nil {
-			response += fmt.Sprintf("  - TN: %.1f\n", *resp.Score.TN)
-		} else {
-			response += "  - TN: null\n"
-		}
-
-		if resp.Score.BTL != nil {
-			response += fmt.Sprintf("  - BTL: %.1f\n", *resp.Score.BTL)
-		} else {
-			response += "  - BTL: null\n"
-		}
-
-		if resp.Score.GK != nil {
-			response += fmt.Sprintf("  - Giữa kỳ: %.1f\n", *resp.Score.GK)
-		} else {
-			response += "  - GK: null\n"
-		}
-
-		if resp.Score.CK != nil {
-			response += fmt.Sprintf("  - CK: %.1f\n", *resp.Score.CK)
-		} else {
-			response += "  - CK: null\n"
-		}
+		msgText := fmt.Sprintf("```json\n%s\n```", response)
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, msgText)
+		msg.ParseMode = "MarkdownV2"
+		bot.Send(msg)
 	}
-	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
-	bot.Send(msg)
 
-	// msgText := fmt.Sprintf("```json\n%s\n```", response)
-	// msg := tgbotapi.NewMessage(update.Message.Chat.ID, msgText)
-	// msg.ParseMode = "MarkdownV2"
-	// bot.Send(msg)
 }
 
 func HandleAllGrade(bot *tgbotapi.BotAPI, update tgbotapi.Update) {

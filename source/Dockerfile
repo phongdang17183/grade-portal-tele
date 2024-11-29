@@ -9,13 +9,13 @@ COPY . .
 RUN go build -o main main.go
 
 # Thiết lập Entrypoint Script
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+# COPY entrypoint.sh /entrypoint.sh
+# RUN chmod +x /entrypoint.sh
 
 # Expose port
 EXPOSE 8080
 
 
 # Sử dụng script khởi động trước khi chạy ứng dụng
-ENTRYPOINT ["/entrypoint.sh"]
+# ENTRYPOINT ["/entrypoint.sh"]
 CMD ["./main"]

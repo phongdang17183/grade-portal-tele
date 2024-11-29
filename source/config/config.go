@@ -15,9 +15,11 @@ type Config struct {
 
 func LoadConfig() *Config {
 	log.Println("Loading .env file...")
-	err := godotenv.Load("./.env")
+
+	err := godotenv.Load(".env")
+	defer godotenv.Load(".env")
 	if err != nil {
-		log.Fatalf("Error loading .env file: %v", err)
+		println("Error loading .env file : %v", err)
 	}
 
 	config := &Config{
@@ -26,10 +28,14 @@ func LoadConfig() *Config {
 		DBURL:     os.Getenv("DBURL"),
 	}
 
+	if config.APIURL == "" {
+		log.Fatal("API_URL is not set in the environment")
+	}
 	if config.BOT_TOKEN == "" {
 		log.Fatal("BOT_TOKEN is not set in the environment")
 	}
-
-	log.Println(".env file loaded successfully.")
+	if config.DBURL == "" {
+		log.Fatal("DBURL is not set in the environment")
+	}
 	return config
 }
