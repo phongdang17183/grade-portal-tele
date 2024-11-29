@@ -1,29 +1,32 @@
 package bot
+
 import (
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"Grade_Portal_TelegramBot/config"
 	"Grade_Portal_TelegramBot/internal/handlers"
+
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
+func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, cfg *config.Config) {
 	switch update.Message.Command() {
 	case "start":
 		handlers.HandleStart(bot, update)
 	case "getOTP":
-		handlers.HandleOTP(bot, update, update.Message.CommandArguments())
+		handlers.HandleOTP(bot, update, update.Message.CommandArguments(), cfg)
 	case "register":
-		handlers.HandleRegister(bot, update, update.Message.CommandArguments())
+		handlers.HandleRegister(bot, update, update.Message.CommandArguments(), cfg)
 	case "resetPassWord":
-		handlers.HandleRegister(bot, update, update.Message.CommandArguments())
+		handlers.HandleRegister(bot, update, update.Message.CommandArguments(), cfg)
 	case "login":
-		handlers.HanldeLogin(bot, update, update.Message.CommandArguments())
+		handlers.HanldeLogin(bot, update, update.Message.CommandArguments(), cfg)
 	case "help":
 		handlers.HandleHelp(bot, update)
 	case "info":
-		handlers.HandleInfo(bot, update)
+		handlers.HandleInfo(bot, update, cfg)
 	case "grade":
-		handlers.HandleGrade(bot, update, update.Message.CommandArguments())
+		handlers.HandleGrade(bot, update, update.Message.CommandArguments(), cfg)
 	case "allGrade":
-		handlers.HandleAllGrade(bot, update)
+		handlers.HandleAllGrade(bot, update, cfg)
 	case "clear":
 		handlers.HandleClear(bot, update)
 	case "history":
