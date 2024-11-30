@@ -27,17 +27,8 @@ func ClearHistory(chatID int64) bool {
 	return true
 }
 
-func GetHistory(chatID int64) (*models.DBHistory, error) {
+func GetHistory(chatID int64) (*[]models.Course, error) {
 	// Lấy lịch sử từ chatID
-	history, err := GetHistoryByChatID(chatID)
-	if err != nil {
-		return nil, err
-	}
-
-	return history, nil
-}
-
-func GetHistoryByChatID(chatID int64) (*models.DBHistory, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -56,8 +47,9 @@ func GetHistoryByChatID(chatID int64) (*models.DBHistory, error) {
 		return nil, fmt.Errorf("error finding history: %w", err)
 	}
 
-	return &result, nil
+	return &result.ListCourse, nil
 }
+
 
 func AddCourseToHistory(chatID int64, courseName string, course models.Course) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -93,7 +85,6 @@ func AddCourseToHistory(chatID int64, courseName string, course models.Course) e
 
 	for _, c := range history.ListCourse {
 		if c.CourseName == course.CourseName {
-			fmt.Println("Khóa học đã tồn tại, không cần thêm lại!")
 			return nil
 		}
 	}
@@ -150,7 +141,6 @@ func AddAllCourseToHistory(chatID int64, Ms string, score models.Score) error {
 	// Kiểm tra nếu khóa học đã tồn tại
 	for _, c := range history.ListCourse {
 		if c.CourseName == Ms {
-			fmt.Println("Khóa học đã tồn tại, không cần thêm lại!")
 			return nil
 		}
 	}

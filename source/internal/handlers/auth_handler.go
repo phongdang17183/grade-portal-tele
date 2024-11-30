@@ -1,13 +1,12 @@
 package handlers
 
 import (
-	"Grade_Portal_TelegramBot/internal/services"
 	"Grade_Portal_TelegramBot/config"
+	"Grade_Portal_TelegramBot/internal/services"
 	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
-
 
 func HandleRegister(bot *tgbotapi.BotAPI, update tgbotapi.Update, input string, cfg *config.Config) {
 	parts := strings.Split(input, " ")
@@ -31,21 +30,25 @@ func HandleRegister(bot *tgbotapi.BotAPI, update tgbotapi.Update, input string, 
 		} else {
 			response = "Đã xảy ra lỗi không xác định. Hãy thử lại vào lần sau."
 		}
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, response + "Lỗi: " + err.Error())
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, response+"Lỗi: "+err.Error())
 		bot.Send(msg)
-		return 
+		return
 	}
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
 	bot.Send(msg)
 }
 
 func HandleOTP(bot *tgbotapi.BotAPI, update tgbotapi.Update, mssv string, cfg *config.Config) {
-	_, err := services.GetOTP(mssv, cfg)
 	var response string
-	if err == nil {
-		response = "OTP đã được gửi về email của bạn, vui kiểm tra email."
+	if mssv == "" {
+		response = "Thiếu MSSV."
 	} else {
-		response = err.Error()
+		_, err := services.GetOTP(mssv, cfg)
+		if err == nil {
+			response = "OTP đã được gửi về email của bạn, vui kiểm tra email."
+		} else {
+			response = "Có lỗi trong việc lấy OTP, vui lòng thử lại sau: \n"
+		}
 	}
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
 	bot.Send(msg)
@@ -60,9 +63,8 @@ func HanldeLogin(bot *tgbotapi.BotAPI, update tgbotapi.Update, input string, cfg
 	if err == nil {
 		response = "Đăng nhập thành công, các khóa học bạn đang có là: " + strings.Join(resp.ListCourse, ", ")
 	} else {
-		response = "Có lỗi trong việc xác thực hãy thử lại sau: " + err.Error()
+		response = "Có lỗi trong việc xác thực hãy thử lại sau: "
 	}
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
 	bot.Send(msg)
 }
-

@@ -18,8 +18,7 @@ func LoadConfig() *Config {
 	log.Println("Loading .env file from Grade_Portal_TelegramBot/config/.env...")
 	err := godotenv.Load(".env")
 	if err != nil {
-		// log.Fatalf("Error loading .env file: %v", err)
-		fmt.Println("Error loading .env file: %v", err)
+		fmt.Println("Error loading .env file: %w", err)
 	}
 
 	config := &Config{

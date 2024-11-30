@@ -4,7 +4,6 @@ package bot
 import (
 	"Grade_Portal_TelegramBot/config"
 	"fmt"
-	"log"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -15,7 +14,7 @@ func Start() {
 	// Khởi tạo bot
 	bot, err := tgbotapi.NewBotAPI(cfg.BOT_TOKEN)
 	if err != nil {
-		log.Fatalf("Failed to create bot: %v", err) // In lỗi chi tiết
+		fmt.Printf("Failed to create bot: %v", err) // In lỗi chi tiết
 	}
 	// connet DBMongo
 	config.ConnectMongoDB(cfg.DBURL)

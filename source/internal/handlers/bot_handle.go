@@ -17,9 +17,9 @@ func HandleStart(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 		"/history - xem lịch sử điểm\n"+
 		"/clear - xóa lịch sử điểm\n"+
 		"/info - xem thông tin tài khoản\n"+
-		"/getOTP - lấy OTP để đăng ký hoặc đổi mật khẩu\n"+
-		"/register [MSSV] [password] [OTP] - đăng ký tài khoản\n"+
-		"/resetPassWord [MSSV] [password] [OTP] - đổi mật khẩu\n"+
+		"/getOTP + [MSSV] - lấy OTP để đăng ký hoặc đổi mật khẩu\n"+
+		"/register + [MSSV] + [password] + [OTP] - đăng ký tài khoản\n"+
+		"/resetPassWord + [MSSV] + [password] + [OTP] - đổi mật khẩu\n"+
 		"/help - để biết thêm các lệnh khác.",
 		userID)
 
@@ -35,9 +35,9 @@ func HandleHelp(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 			"/history - xem lịch sử điểm\n" +
 			"/clear - xóa lịch sử điểm\n" +
 			"/info - xem thông tin tài khoản\n" +
-			"/getOTP - lấy OTP để đăng nhập\n" +
-			"/register - đăng ký tài khoản\n" +
-			"/resetPassWord - đổi mật khẩu\n" +
+			"/getOTP + [MSSV] - lấy OTP để đăng nhập\n" +
+			"/register + [MSSV] + [password] + [OTP] - đăng ký tài khoản\n" +
+			"/resetPassWord + [MSSV] + [password] + [OTP] - đổi mật khẩu\n" +
 			"/help - để biết thêm các lệnh khác.")
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
 	bot.Send(msg)
@@ -61,12 +61,15 @@ func HandleHistory(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	var msg tgbotapi.MessageConfig
 	if err != nil {
 		msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Không có lịch sử tra cứu nào.")
+		bot.Send(msg)
 	} else {
-		jsonStr, _ := json.Marshal(response)
-		msgText := fmt.Sprintf("```json\n%s\n```", string(jsonStr))
-		msg = tgbotapi.NewMessage(update.Message.Chat.ID, msgText)
-		msg.ParseMode = "MarkdownV2"
+		for _, course := range *response {
+			jsonStr, _ := json.Marshal(course)
+			fmt.Println(string(jsonStr))
+			msgText := fmt.Sprintf("```json\n%s\n```", string(jsonStr))
+			msg = tgbotapi.NewMessage(update.Message.Chat.ID, msgText)
+			msg.ParseMode = "MarkdownV2"
+			bot.Send(msg)
+		}
 	}
-
-	bot.Send(msg)
 }

@@ -138,8 +138,7 @@ func GetGrades(chatID int64, semesterOrCourseID string, cfg *config.Config) (*mo
 
 	res := AddCourseToHistory(chatID, semesterOrCourseID, course)
 	if res != nil {
-		fmt.Printf("Lỗi khi thêm khóa học: %v\n", res)
-		log.Fatalf("Lỗi khi thêm khóa học: %v", err)
+		log.Fatalf("Lỗi khi thêm khóa học: %v", res)
 	}
 	return &grades, nil
 }

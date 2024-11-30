@@ -5,21 +5,54 @@ import (
 	"Grade_Portal_TelegramBot/internal/services"
 	"encoding/json"
 	"fmt"
-
+	"strings"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 func HandleInfo(bot *tgbotapi.BotAPI, update tgbotapi.Update, cfg *config.Config) {
 	resp, err := services.GetStudentInfo(update.Message.Chat.ID, cfg)
+	
 	if err != nil {
-		response := "Không tìm thấy thông tin đăng nhập. Hãy đăng nhập trước khi sử dụng dịch vụ: " + err.Error()
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
+		errorDetails := "Lỗi: " + err.Error()
+		var response string
+		
+		if strings.Contains(err.Error(), "token not found") {
+			response = "Không tìm thấy thông tin đăng nhập. Hãy đăng nhập trước khi sử dụng dịch vụ"
+		} else if strings.Contains(err.Error(), "database error") {
+			response = "Không kết nối được với cơ sở dữ liệu. Hãy thử lại vào lần sau."
+		} else if strings.Contains(err.Error(), "error getting token") {
+			response = "Không tìm thấy thông tin đăng nhập. Hãy đăng nhập trước khi sử dụng dịch vụ"
+		} else if strings.Contains(err.Error(), "error creating request") {
+			response = "Không  kết nối được với hệ thống. Hãy thử lại vào lần sau"
+		} else if strings.Contains(err.Error(), "error sending request") {
+			response = "Hệ thống không phản hồi.  Hãy thử lại vào lần sau."
+		} else if strings.Contains(err.Error(), "unexpected status code") {
+			response = "Hệ thống gặp lỗi khi truy xuất thông tin. Mã lỗi API không hợp lệ."
+		} else if strings.Contains(err.Error(), "error decoding response") {
+			response = "Dữ liệu nhận được không hợp lệ. Hãy thử lại vào lần sau."
+		} else if strings.Contains(err.Error(), "access forbidden") {
+			response = "Hệ thống từ chối yêu cầu. Hãy liên hệ với dịch vụ hỗ trợ."
+		} else if strings.Contains(err.Error(), "internal server error") {
+			response = "Lỗi hệ thống. Hãy thử lại vào lần sau."
+		} else if strings.Contains(err.Error(), "unauthorized access") {
+			response = "Không có quyền truy cập. Hãy kiểm tra thông tin đăng nhập."
+		} else if strings.Contains(err.Error(), "timeout") {
+			response = "Kết nối bị gián đoạn. Hãy thử lại vào lần sau."
+		} else {
+			response = "Đã xảy ra lỗi không xác định. Hãy thử lại vào lần sau."
+		}
+
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, response+"\n\n"+errorDetails)
 		bot.Send(msg)
 		return
 	}
+
 	response, err := json.MarshalIndent(resp, "", "  ")
 	if err != nil {
 		fmt.Println(err)
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Lỗi xử lý dữ liệu.")
+		bot.Send(msg)
+		return
 	}
 	msgText := fmt.Sprintf("```json\n%s\n```", response)
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, msgText)
@@ -52,7 +85,7 @@ func HandleGrade(bot *tgbotapi.BotAPI, update tgbotapi.Update, semesterOrCourseI
 
 	jsonData, err := json.MarshalIndent(result, "", "  ")
 	if err != nil {
-		response = "Lỗi khi tạo JSON: " + err.Error()
+		response = "Lỗi khi tạo điểm vui lòng thử lại sau: " + err.Error()
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
 		bot.Send(msg)
 		return
@@ -61,41 +94,6 @@ func HandleGrade(bot *tgbotapi.BotAPI, update tgbotapi.Update, semesterOrCourseI
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, msgText)
 	msg.ParseMode = "MarkdownV2"
 	bot.Send(msg)
-	// } else {
-	// 	response = fmt.Sprintf("Kết quả điểm cho %s:\n________\n%s:\n", semesterOrCourseID, resp.Name)
-
-	// 	if resp.Score.BT != nil {
-	// 		response += fmt.Sprintf("  - BT: %.1f\n", *resp.Score.BT)
-	// 	} else {
-	// 		response += "  - BT: null\n"
-	// 	}
-
-	// 	if resp.Score.TN != nil {
-	// 		response += fmt.Sprintf("  - TN: %.1f\n", *resp.Score.TN)
-	// 	} else {
-	// 		response += "  - TN: null\n"
-	// 	}
-
-	// 	if resp.Score.BTL != nil {
-	// 		response += fmt.Sprintf("  - BTL: %.1f\n", *resp.Score.BTL)
-	// 	} else {
-	// 		response += "  - BTL: null\n"
-	// 	}
-
-	// 	if resp.Score.GK != nil {
-	// 		response += fmt.Sprintf("  - Giữa kỳ: %.1f\n", *resp.Score.GK)
-	// 	} else {
-	// 		response += "  - GK: null\n"
-	// 	}
-
-	// 	if resp.Score.CK != nil {
-	// 		response += fmt.Sprintf("  - CK: %.1f\n", *resp.Score.CK)
-	// 	} else {
-	// 		response += "  - CK: null\n"
-	// 	}
-	// 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
-	// 	bot.Send(msg)
-	// }
 }
 
 func HandleAllGrade(bot *tgbotapi.BotAPI, update tgbotapi.Update, cfg *config.Config) {
@@ -139,47 +137,5 @@ func HandleAllGrade(bot *tgbotapi.BotAPI, update tgbotapi.Update, cfg *config.Co
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, string(msgText))
 	msg.ParseMode = "MarkdownV2" // Nếu bạn muốn hiển thị trong markdown
 	bot.Send(msg)
-	// response = "Kết quả điểm:\n________\n"
-	// for _, grade := range resp.AllGrades {
-	// 	response += fmt.Sprintf("Mã Môn: %s\nMôn: %s\n", grade.Ms, grade.Name)
-
-	// 	if grade.Score.BT != nil {
-	// 		response += fmt.Sprintf("  - BT: %.1f\n", *grade.Score.BT)
-	// 	} else {
-	// 		response += "  - BT: null\n"
-	// 	}
-
-	// 	if grade.Score.TN != nil {
-	// 		response += fmt.Sprintf("  - TN: %.1f\n", *grade.Score.TN)
-	// 	} else {
-	// 		response += "  - TN: null\n"
-	// 	}
-
-	// 	if grade.Score.BTL != nil {
-	// 		response += fmt.Sprintf("  - BTL: %.1f\n", *grade.Score.BTL)
-	// 	} else {
-	// 		response += "  - BTL: null\n"
-	// 	}
-
-	// 	if grade.Score.GK != nil {
-	// 		response += fmt.Sprintf("  - Giữa kỳ: %.1f\n", *grade.Score.GK)
-	// 	} else {
-	// 		response += "  - GK: null\n"
-	// 	}
-
-	// 	if grade.Score.CK != nil {
-	// 		response += fmt.Sprintf("  - CK: %.1f\n", *grade.Score.CK)
-	// 	} else {
-	// 		response += "  - CK: null\n"
-	// 	}
-	// 	response += "________\n"
-	// }
 }
 
-// msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
-// bot.Send(msg)
-
-// msgText := fmt.Sprintf("```json\n%s\n```", response)
-// msg := tgbotapi.NewMessage(update.Message.Chat.ID, msgText)
-// msg.ParseMode = "MarkdownV2"
-// bot.Send(msg)

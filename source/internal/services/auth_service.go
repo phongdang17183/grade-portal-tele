@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -101,7 +102,7 @@ func GetOTP(mssv string, cfg *config.Config) (*models.MsgResp, error) {
 
 	// Kiểm tra mã trạng thái HTTP
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status code: %d %v", resp.StatusCode, resp.Body)
+		return nil, fmt.Errorf("unexpected status code: %d ", resp.StatusCode)
 	}
 
 	var msgResp models.MsgResp
@@ -184,7 +185,7 @@ func Login(chatID int64, mssv string, pw string, cfg *config.Config) (*models.Re
 }
 
 func GetTokenByChatID(chatID int64, client *mongo.Client) (*models.DBToken, error) {
-	
+
 	var token models.DBToken
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -195,7 +196,7 @@ func GetTokenByChatID(chatID int64, client *mongo.Client) (*models.DBToken, erro
 	filter := map[string]interface{}{"chat_id": chatID}
 
 	err := collection.FindOne(ctx, filter).Decode(&token)
-	fmt.Println(token)
+
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, fmt.Errorf("no token found for chatID %d", chatID)
