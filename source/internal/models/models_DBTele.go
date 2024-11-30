@@ -7,5 +7,9 @@ type DBToken struct {
 }
 type DBHistory struct {
 	ChatID     int64    `bson:"chat_id"`
-	ListCourse []string `bson:"list_course"`
+	ListCourse []Course `bson:"list_course"`
+}
+type Course struct {
+	CourseName string `bson:"course_name"`
+	Score      Score  `bson:"score"`
 }

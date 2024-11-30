@@ -1,0 +1,70 @@
+name: grade_bot
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest  # Sử dụng máy ảo GitHub Actions
+    steps:
+      # Kiểm tra và cài đặt Docker (nếu chưa có)
+      - name: Set up Docker
+        run: |
+          if ! command -v docker &> /dev/null; then
+            echo "Docker not found. Installing Docker..."
+            sudo apt-get update
+            sudo apt-get install -y docker.io
+            sudo systemctl start docker
+            sudo systemctl enable docker
+            sudo usermod -aG docker $USER
+          else
+            echo "Docker already installed"
+          fi
+      # Checkout code từ repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Build và Push Docker Image
+      - name: Build and Push Docker Image
+        env:  # Truyền các secrets từ repository
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_ACCESS_TOKEN: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
+        run: |
+          echo $DOCKERHUB_ACCESS_TOKEN | docker login -u $DOCKERHUB_USERNAME --password-stdin
+          docker build -t $DOCKERHUB_USERNAME/grade-portal-tele ./source
+          docker push $DOCKERHUB_USERNAME/grade-portal-tele
+  deploy:
+    needs: docker
+    runs-on: ubuntu-latest  # Sử dụng máy ảo GitHub Actions
+    steps:
+      # Kiểm tra và cài đặt Docker (nếu chưa có)
+      - name: Set up Docker
+        run: |
+          if ! command -v docker &> /dev/null; then
+            echo "Docker not found. Installing Docker..."
+            sudo apt-get update
+            sudo apt-get install -y docker.io
+            sudo systemctl start docker
+            sudo systemctl enable docker
+            sudo usermod -aG docker $USER
+          else
+            echo "Docker already installed"
+          fi
+      # Tạo file .env từ GitHub Secrets
+      - name: Create .env file
+        run: |
+          echo "${{ secrets.ENV_FILE_CONTENT }}" > .env
+        shell: bash
+      # Pull Docker Image
+      - name: Pull Docker Image
+        run: docker pull ${{ secrets.DOCKERHUB_USERNAME }}/grade-portal-tele:latest
+
+      # Xóa container cũ (nếu có)
+      - name: Delete Old Container
+        run: docker rm -f grade-portal || echo "Container does not exist"
+
+      # Chạy container mới
+      - name: Run Docker Container
+        run: |
+          docker run -d -p 8080:8080 --name grade-portal --env-file .env ${{ secrets.DOCKERHUB_USERNAME }}/grade-portal-tele

@@ -1,12 +1,9 @@
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    # image: tele_test
+    image: phongthanhphong/grade-portal-tele:latest
     env_file:
       - .env
     ports:
       - "8080:8080" 
     container_name: grade-portal-tele
-    restart: unless-stopped 
+    restart: unless-stopped

@@ -7,12 +7,11 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 )
 
-var cfg = config.LoadConfig()
-
-func GetStudentInfo(chatID int64) (*struct {
+func GetStudentInfo(chatID int64, cfg *config.Config) (*struct {
 	Email   string `json:"Email"`
 	Name    string `json:"Name"`
 	Ms      string `json:"Ms"`
@@ -67,7 +66,15 @@ func GetStudentInfo(chatID int64) (*struct {
 	return &resInfo, nil
 }
 
-func GetGrades(chatID int64, semesterOrCourseID string) (*models.Grade, error) {
+func GetGrades(chatID int64, semesterOrCourseID string, cfg *config.Config) (*models.Grade, error) {
+
+	if semesterOrCourseID == "" {
+		return nil, fmt.Errorf("bạn chưa nhập mã môn. Định dạng đúng: /grade mã môn-học kỳ, ví dụ /grade CO3103-HK233")
+	}
+
+	if !strings.Contains(semesterOrCourseID, "-") {
+		return nil, fmt.Errorf("mã môn sai (thiếu học kỳ). Định dạng đúng: /grade mã môn-học kỳ, ví dụ /grade CO3103-HK233")
+	}
 
 	endpoint := `/resultScore/getmark/` + semesterOrCourseID
 
@@ -95,24 +102,49 @@ func GetGrades(chatID int64, semesterOrCourseID string) (*models.Grade, error) {
 		return nil, fmt.Errorf("error sending request: %w", err)
 	}
 	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+	switch resp.StatusCode {
+	case http.StatusNotFound:
+		return nil, fmt.Errorf("mã môn %s không tồn tại. Vui lòng kiểm tra lại", semesterOrCourseID)
+	case http.StatusBadRequest:
+		return nil, fmt.Errorf("mã môn %s không hợp lệ hoặc đã hết hạn. Vui lòng kiểm tra lại", semesterOrCourseID)
+	case http.StatusOK:
+		// Tiếp tục xử lý nếu trạng thái là 200 OK
+		break
+	default:
+		return nil, fmt.Errorf("lỗi không mong muốn từ API: mã trạng thái %d", resp.StatusCode)
 	}
+	// if resp.StatusCode == http.StatusNotFound {
+	// 	return nil, fmt.Errorf("mã môn %s không tồn tại. Vui lòng kiểm tra lại", semesterOrCourseID)
+	// }
+	// if resp.StatusCode != http.StatusOK {
+	// 	return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+	// }
 
 	var grades models.Grade
 	if err := json.NewDecoder(resp.Body).Decode(&grades); err != nil {
 		return nil, fmt.Errorf("error decoding response: %w", err)
 	}
 
-	res := AddCourseToHistory(chatID, semesterOrCourseID)
+	course := models.Course{
+		CourseName: semesterOrCourseID,
+		Score: models.Score{
+			BT:  grades.Score.BT,
+			TN:  grades.Score.TN,
+			BTL: grades.Score.BTL,
+			GK:  grades.Score.GK,
+			CK:  grades.Score.CK,
+		},
+	}
+
+	res := AddCourseToHistory(chatID, semesterOrCourseID, course)
 	if res != nil {
+		fmt.Printf("Lỗi khi thêm khóa học: %v\n", res)
 		log.Fatalf("Lỗi khi thêm khóa học: %v", err)
 	}
 	return &grades, nil
 }
 
-func GetAllGrades(chatID int64) (*models.AllGrades, error) {
+func GetAllGrades(chatID int64, cfg *config.Config) (*models.AllGrades, error) {
 
 	endpoint := "/resultScore/getmark"
 	url := cfg.APIURL + endpoint
@@ -151,10 +183,25 @@ func GetAllGrades(chatID int64) (*models.AllGrades, error) {
 	if err := json.NewDecoder(resp.Body).Decode(&allGrades); err != nil {
 		log.Fatalf("Something wrong in get all grade %v", err)
 	}
-	fmt.Println(allGrades)
-	for _, a := range allGrades.AllGrades {
-		res := AddCourseToHistory(chatID, a.Ms)
-		if res != nil {
+	// for _, a := range allGrades.AllGrades {
+	// 	//res := AddCourseToHistory(chatID, a.Ms)
+	// 	if res != nil {
+	// 		log.Fatalf("Lỗi khi thêm khóa học: %v", err)
+	// 	}
+	// }
+	for _, grade := range allGrades.AllGrades {
+		// Lấy điểm của khóa học
+		score := models.Score{
+			BT:  grade.Score.BT,
+			TN:  grade.Score.TN,
+			BTL: grade.Score.BTL,
+			GK:  grade.Score.GK,
+			CK:  grade.Score.CK,
+		}
+
+		// Lưu vào history cho từng khóa học
+		err := AddAllCourseToHistory(chatID, grade.Ms, score)
+		if err != nil {
 			log.Fatalf("Lỗi khi thêm khóa học: %v", err)
 		}
 	}

@@ -14,7 +14,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func RegisterStudent(ms string, pw string, otp string) (*models.MsgResp, error) {
+func RegisterStudent(ms string, pw string, otp string, cfg *config.Config) (*models.MsgResp, error) {
 
 	endpoint := "/resetpassword"
 
@@ -65,7 +65,7 @@ func RegisterStudent(ms string, pw string, otp string) (*models.MsgResp, error) 
 	return &msgResp, nil
 }
 
-func GetOTP(mssv string) (*models.MsgResp, error) {
+func GetOTP(mssv string, cfg *config.Config) (*models.MsgResp, error) {
 
 	endpoint := "/otp"
 
@@ -112,7 +112,7 @@ func GetOTP(mssv string) (*models.MsgResp, error) {
 	return &msgResp, nil
 }
 
-func Login(chatID int64, mssv string, pw string) (*models.ResLogin, error) {
+func Login(chatID int64, mssv string, pw string, cfg *config.Config) (*models.ResLogin, error) {
 
 	endpoint := "/loginTele"
 	url := cfg.APIURL + endpoint

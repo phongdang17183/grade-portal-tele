@@ -1,9 +1,11 @@
 package config
 
 import (
-	"github.com/joho/godotenv"
+	"fmt"
 	"log"
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -13,10 +15,11 @@ type Config struct {
 }
 
 func LoadConfig() *Config {
-	log.Println("Loading .env file...")
+	log.Println("Loading .env file from Grade_Portal_TelegramBot/config/.env...")
 	err := godotenv.Load(".env")
 	if err != nil {
-		log.Fatalf("Error loading .env file: %v", err)
+		// log.Fatalf("Error loading .env file: %v", err)
+		fmt.Println("Error loading .env file: %v", err)
 	}
 
 	config := &Config{
@@ -25,10 +28,14 @@ func LoadConfig() *Config {
 		DBURL:     os.Getenv("DBURL"),
 	}
 
+	if config.APIURL == "" {
+		log.Fatal("API_URL is not set in the environment")
+	}
 	if config.BOT_TOKEN == "" {
 		log.Fatal("BOT_TOKEN is not set in the environment")
 	}
-
-	log.Println(".env file loaded successfully.")
+	if config.DBURL == "" {
+		log.Fatal("DBURL is not set in the environment")
+	}
 	return config
 }
