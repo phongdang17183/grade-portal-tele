@@ -2,7 +2,7 @@ services:
   app:
     image: phongthanhphong/grade-portal-tele:latest
     env_file:
-      - .env
+      - ./config/.env
     ports:
       - "8080:8080" 
     container_name: grade-portal-tele

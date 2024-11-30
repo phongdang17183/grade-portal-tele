@@ -18,7 +18,22 @@ func HandleRegister(bot *tgbotapi.BotAPI, update tgbotapi.Update, input string, 
 	if err == nil {
 		response = resp.Msg + ", vui lòng login bằng cú pháp /login_mssv_password để sử dụng dịch vụ."
 	} else {
-		response = "Error fetching student info:" + err.Error()
+		if strings.Contains(err.Error(), "error encoding JSON") {
+			response = "Hệ thống gặp sự cố. Hãy thử lại vào lần sau."
+		} else if strings.Contains(err.Error(), "error creating request") {
+			response = "Không kết nối được với hệ thống. Hãy thử lại vào lần sau."
+		} else if strings.Contains(err.Error(), "error sending request") {
+			response = "Hệ thống không phản hồi. Hãy thử lại vào lần sau."
+		} else if strings.Contains(err.Error(), "unexpected status code") {
+			response = "Hệ thống gặp lỗi khi truy xuất thông tin. Mã lỗi API không hợp lệ."
+		} else if strings.Contains(err.Error(), "error decoding response") {
+			response = "Dữ liệu nhận được không hợp lệ. Hãy thử lại vào lần sau."
+		} else {
+			response = "Đã xảy ra lỗi không xác định. Hãy thử lại vào lần sau."
+		}
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, response + "Lỗi: " + err.Error())
+		bot.Send(msg)
+		return 
 	}
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
 	bot.Send(msg)
