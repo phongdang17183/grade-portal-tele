@@ -11,11 +11,11 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, cfg *config.Conf
 	switch update.Message.Command() {
 	case "start":
 		handlers.HandleStart(bot, update)
-	case "getOTP":
+	case "getotp":
 		handlers.HandleOTP(bot, update, update.Message.CommandArguments(), cfg)
 	case "register":
 		handlers.HandleRegister(bot, update, update.Message.CommandArguments(), cfg)
-	case "resetPassWord":
+	case "resetpassword":
 		handlers.HandleRegister(bot, update, update.Message.CommandArguments(), cfg)
 	case "login":
 		handlers.HanldeLogin(bot, update, update.Message.CommandArguments(), cfg)
@@ -25,7 +25,7 @@ func HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update, cfg *config.Conf
 		handlers.HandleInfo(bot, update, cfg)
 	case "grade":
 		handlers.HandleGrade(bot, update, update.Message.CommandArguments(), cfg)
-	case "allGrade":
+	case "allgrade":
 		handlers.HandleAllGrade(bot, update, cfg)
 	case "clear":
 		handlers.HandleClear(bot, update)
