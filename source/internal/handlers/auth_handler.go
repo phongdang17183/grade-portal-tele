@@ -3,6 +3,9 @@ package handlers
 import (
 	"Grade_Portal_TelegramBot/config"
 	"Grade_Portal_TelegramBot/internal/services"
+	"fmt"
+	"log"
+	"regexp"
 	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -54,7 +57,8 @@ func HandleOTP(bot *tgbotapi.BotAPI, update tgbotapi.Update, mssv string, cfg *c
 		if err == nil {
 			response = "OTP đã được gửi về email của bạn, vui kiểm tra email."
 		} else {
-			response = "Có lỗi trong việc lấy OTP, vui lòng thử lại sau."
+			response = "Có lỗi trong việc lấy OTP, vui lòng thử lại sau: " + err.Error() + "\n"
+			// response = err.Error()
 		}
 	}
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
@@ -62,22 +66,60 @@ func HandleOTP(bot *tgbotapi.BotAPI, update tgbotapi.Update, mssv string, cfg *c
 }
 
 func HanldeLogin(bot *tgbotapi.BotAPI, update tgbotapi.Update, input string, cfg *config.Config) {
-	parts := strings.Split(input, " ")
-	var mssv, pw string
-	var response string
+	// Thêm cơ chế bắt lỗi toàn cục để ngăn bot bị crash (Panic + Runtime Error)
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("Panic caught: %v", r)
+			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại sau. :(")
+			bot.Send(msg)
+		}
+	}()
+
+	// Tách input và kiểm tra đủ tham số
+	parts := strings.Fields(input) // Xử lý cả chuỗi có nhiều khoảng trắng
 	if len(parts) < 2 {
-		response = "Thiếu MSSV hoặc password."
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Có vẻ như bạn chưa nhập MSSV hoặc mật khẩu. Vui lòng nhập đúng cú pháp: /login [MSSV] [mật khẩu].")
 		bot.Send(msg)
 		return
 	}
-	mssv, pw = parts[0], parts[1]
-	resp, err := services.Login(update.Message.Chat.ID, mssv, pw, cfg)
-	if err == nil {
-		response = "Đăng nhập thành công, các khóa học bạn đang có là: " + strings.Join(resp.ListCourse, ", ")
-	} else {
-		response = "Có lỗi trong việc xác thực hãy thử lại sau."
+
+	// Xác thực dữ liệu nhập (MSSV là chuỗi số, mật khẩu không chứa khoảng trắng).
+	mssv, pw := parts[0], strings.Join(parts[1:], " ")
+	isValidMSSV := regexp.MustCompile(`^\d{7}$`).MatchString(mssv)
+	if !isValidMSSV {
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "MSSV không hợp lệ. Vui lòng nhập MSSV gồm 7 chữ số.")
+		bot.Send(msg)
+		return
 	}
+	if strings.Contains(pw, " ") {
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Mật khẩu không được chứa khoảng trắng. Vui lòng nhập lại.")
+		bot.Send(msg)
+		return
+	}
+
+	// Gửi yêu cầu đăng nhập qua API
+	resp, err := services.Login(update.Message.Chat.ID, mssv, pw, cfg)
+	var response string
+	if err != nil {
+		// Log lỗi để hỗ trợ debug
+		log.Printf("Login error for MSSV %s: %v", mssv, err)
+
+		// Xử lý các loại lỗi
+		if strings.Contains(err.Error(), "Timeout") {
+			response = "API không phản hồi, vui lòng thử lại sau."
+		} else if strings.Contains(err.Error(), "HTTP 400") {
+			response = "Sai MSSV hoặc mật khẩu. Vui lòng kiểm tra và thử lại."
+		} else if strings.Contains(err.Error(), "unexpected status code") {
+			response = "Hệ thống đang gặp sự cố, vui lòng thử lại sau."
+		} else {
+			response = fmt.Sprintf("Đăng nhập thất bại. Chi tiết lỗi: %s", err.Error())
+		}
+	} else {
+		// Đăng nhập thành công
+		response = "Đăng nhập thành công! Các khóa học bạn đang có là: " + strings.Join(resp.ListCourse, ", ")
+	}
+
+	// Gửi phản hồi đến người dùng
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
 	bot.Send(msg)
 }
