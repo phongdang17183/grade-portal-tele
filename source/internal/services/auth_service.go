@@ -20,7 +20,7 @@ func RegisterStudent(ms string, pw string, otp string, cfg *config.Config) (*mod
 	endpoint := "/resetpassword"
 
 	url := cfg.APIURL + endpoint
-
+	
 	data := struct {
 		MS  string `json:"ms"`
 		PW  string `json:"password"`
@@ -107,7 +107,7 @@ func GetOTP(mssv string, cfg *config.Config) (*models.MsgResp, error) {
 
 	var msgResp models.MsgResp
 	if err := json.NewDecoder(resp.Body).Decode(&msgResp); err != nil {
-		return nil, fmt.Errorf("error decoding response: %w", err)
+		return nil, fmt.Errorf("unexpected status code: %d ", resp.StatusCode)
 	}
 
 	return &msgResp, nil
@@ -147,7 +147,7 @@ func Login(chatID int64, mssv string, pw string, cfg *config.Config) (*models.Re
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+		return nil, fmt.Errorf("mssv hoặc mật khẩu chưa chính xác")
 	}
 	var resLogin models.ResLogin
 	if err := json.NewDecoder(resp.Body).Decode(&resLogin); err != nil {
@@ -174,7 +174,7 @@ func Login(chatID int64, mssv string, pw string, cfg *config.Config) (*models.Re
 
 	result, err := collection.UpdateOne(ctx, filter, update, opts)
 	if err != nil {
-		return nil, fmt.Errorf("error saving token to database: %w", err)
+		return nil, fmt.Errorf("lỗi khi lưu dữ liệu vui lòng thử lại sau : %w", err)
 	}
 	if result.MatchedCount > 0 {
 		fmt.Println("Token đã được cập nhật.")

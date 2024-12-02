@@ -54,7 +54,7 @@ func HandleOTP(bot *tgbotapi.BotAPI, update tgbotapi.Update, mssv string, cfg *c
 		if err == nil {
 			response = "OTP đã được gửi về email của bạn, vui kiểm tra email."
 		} else {
-			response = "Có lỗi trong việc lấy OTP, vui lòng thử lại sau: \n"
+			response = "Có lỗi trong việc lấy OTP, vui lòng thử lại sau."
 		}
 	}
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
@@ -76,7 +76,7 @@ func HanldeLogin(bot *tgbotapi.BotAPI, update tgbotapi.Update, input string, cfg
 	if err == nil {
 		response = "Đăng nhập thành công, các khóa học bạn đang có là: " + strings.Join(resp.ListCourse, ", ")
 	} else {
-		response = "Có lỗi trong việc xác thực hãy thử lại sau: "
+		response = "Có lỗi trong việc xác thực hãy thử lại sau."
 	}
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
 	bot.Send(msg)
