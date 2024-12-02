@@ -176,7 +176,7 @@ func Login(chatID int64, mssv string, pw string, cfg *config.Config) (*models.Re
 
 	result, err := collection.UpdateOne(ctx, filter, update, opts)
 	if err != nil {
-		return nil, fmt.Errorf("error saving token to database: %w", err)
+		return nil, fmt.Errorf("lỗi khi lưu dữ liệu vui lòng thử lại sau : %w", err)
 	}
 	if result.MatchedCount > 0 {
 		fmt.Println("Token đã được cập nhật.")
