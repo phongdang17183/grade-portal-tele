@@ -6,16 +6,17 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 func HandleInfo(bot *tgbotapi.BotAPI, update tgbotapi.Update, cfg *config.Config) {
 	resp, err := services.GetStudentInfo(update.Message.Chat.ID, cfg)
-	
+
 	if err != nil {
 		errorDetails := "Lỗi: " + err.Error()
 		var response string
-		
+
 		if strings.Contains(err.Error(), "token not found") {
 			response = "Không tìm thấy thông tin đăng nhập. Hãy đăng nhập trước khi sử dụng dịch vụ"
 		} else if strings.Contains(err.Error(), "database error") {
@@ -101,7 +102,7 @@ func HandleAllGrade(bot *tgbotapi.BotAPI, update tgbotapi.Update, cfg *config.Co
 	var response interface{}
 	if err != nil {
 		response = map[string]string{
-			"error": "Không thể lấy dữ liệu điểm: " + err.Error(),
+			"error": "Không thể lấy dữ liệu điểm: ",
 		}
 	} else {
 		var grades []map[string]interface{}
@@ -138,4 +139,3 @@ func HandleAllGrade(bot *tgbotapi.BotAPI, update tgbotapi.Update, cfg *config.Co
 	msg.ParseMode = "MarkdownV2" // Nếu bạn muốn hiển thị trong markdown
 	bot.Send(msg)
 }
-

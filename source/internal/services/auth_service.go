@@ -7,7 +7,10 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
+	"log"
 	"net/http"
 	"time"
 
@@ -116,10 +119,10 @@ func GetOTP(mssv string, cfg *config.Config) (*models.MsgResp, error) {
 }
 
 func Login(chatID int64, mssv string, pw string, cfg *config.Config) (*models.ResLogin, error) {
-
 	endpoint := "/loginTele"
 	url := cfg.APIURL + endpoint
 
+	// Dữ liệu gửi lên API nhóm BE
 	data := struct {
 		Ms string `json:"ms"`
 		PW string `json:"password"`
@@ -128,62 +131,85 @@ func Login(chatID int64, mssv string, pw string, cfg *config.Config) (*models.Re
 		PW: pw,
 	}
 
+	// Mã hóa JSONN
 	jsonData, err := json.Marshal(data)
 	if err != nil {
 		return nil, fmt.Errorf("error encoding JSON: %w", err)
 	}
 
+	// Tạo request
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer([]byte(jsonData)))
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
-
 	req.Header.Set("Content-Type", "application/json")
 
+	// Gửi request
 	client := &http.Client{
 		Timeout: 10 * time.Second,
 	}
 	resp, err := client.Do(req)
 	if err != nil {
+		if errors.Is(err, context.DeadlineExceeded) {
+			return nil, fmt.Errorf("timeout: api không phản hồi")
+		}
 		return nil, fmt.Errorf("error sending request: %w", err)
 	}
 	defer resp.Body.Close()
+
+	// Xử lý mã trạng thái HTTP
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("Mssv hoặc mật khẩu chưa chính xác.")
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("HTTP %d: %s", resp.StatusCode, string(body))
 	}
+
+	// Giải mã JSON phản hồi lại
 	var resLogin models.ResLogin
 	if err := json.NewDecoder(resp.Body).Decode(&resLogin); err != nil {
 		return nil, fmt.Errorf("error decoding response: %w", err)
 	}
-	token := models.DBToken{
-		Mssv:   mssv,
-		ChatID: chatID,
-		Token:  resLogin.Token,
+
+	// Lưu token vào MONGODB
+	// token := models.DBToken{
+	// 	Mssv:   mssv,
+	// 	ChatID: chatID,
+	// 	Token:  resLogin.Token,
+	// }
+	err = saveTokenToDB(chatID, mssv, resLogin.Token)
+	if err != nil {
+		return nil, fmt.Errorf("error saving token: %w", err)
 	}
+	return &resLogin, nil
+}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
+// Hàm lưu token vào MongoDB (được tách ra để tái sử dụng hoặc kiểm thử)
+func saveTokenToDB(chatID int64, mssv, token string) error {
 	collection := config.MongoClient.Database("Do_an").Collection("TOKEN")
-	filter := map[string]interface{}{"mssv": token.Mssv} // Kiểm tra dựa trên MSSV
+
+	filter := map[string]interface{}{"mssv": mssv} // Kiểm tra dựa trên MSSV
 	update := map[string]interface{}{
 		"$set": map[string]interface{}{
-			"chat_id": token.ChatID,
-			"token":   token.Token,
+			"chat_id": chatID,
+			"token":   token,
 		},
 	}
 	opts := options.Update().SetUpsert(true)
 
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
 	result, err := collection.UpdateOne(ctx, filter, update, opts)
 	if err != nil {
-		return nil, fmt.Errorf("error saving token to database: %w", err)
+		return fmt.Errorf("MongoDB UpdateOne failed: %w", err)
 	}
+
+	// Log kết quả lưu trữ
 	if result.MatchedCount > 0 {
-		fmt.Println("Token đã được cập nhật.")
+		log.Println("Token đã được cập nhật.")
 	} else if result.UpsertedCount > 0 {
-		fmt.Printf("Thêm mới token thành công, ID: %v\n", result.UpsertedID)
+		log.Printf("Thêm mới token thành công, ID: %v\n", result.UpsertedID)
 	}
-	return &resLogin, nil
+	return nil
 }
 
 func GetTokenByChatID(chatID int64, client *mongo.Client) (*models.DBToken, error) {
