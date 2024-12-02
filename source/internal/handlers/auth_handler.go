@@ -77,7 +77,7 @@ func HanldeLogin(bot *tgbotapi.BotAPI, update tgbotapi.Update, input string, cfg
 	if err == nil {
 		response = "Đăng nhập thành công, các khóa học bạn đang có là: " + strings.Join(resp.ListCourse, ", ")
 	} else {
-		response = "Có lỗi trong việc xác thực hãy thử lại sau: " + err.Error()
+		response = "Có lỗi trong việc xác thực hãy thử lại sau: "
 	}
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
 	bot.Send(msg)
