@@ -100,12 +100,14 @@ func GetOTP(mssv string, cfg *config.Config) (*models.MsgResp, error) {
 	}
 	defer resp.Body.Close()
 
+	var msgResp models.MsgResp
 	// Kiểm tra mã trạng thái HTTP
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status code: %d ", resp.StatusCode)
+		json.NewDecoder(resp.Body).Decode(&msgResp)
+		// return nil, fmt.Errorf("unexpected status code: %d ", &msgResp)
+		return nil, fmt.Errorf(msgResp.Msg)
 	}
 
-	var msgResp models.MsgResp
 	if err := json.NewDecoder(resp.Body).Decode(&msgResp); err != nil {
 		return nil, fmt.Errorf("error decoding response: %w", err)
 	}
@@ -147,7 +149,7 @@ func Login(chatID int64, mssv string, pw string, cfg *config.Config) (*models.Re
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+		return nil, fmt.Errorf("Mssv hoặc mật khẩu chưa chính xác.")
 	}
 	var resLogin models.ResLogin
 	if err := json.NewDecoder(resp.Body).Decode(&resLogin); err != nil {

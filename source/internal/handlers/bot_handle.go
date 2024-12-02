@@ -13,13 +13,13 @@ func HandleStart(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	response := fmt.Sprintf("Chào mừng %d tôi là hệ thống tra cứu điểm - một bot-chat hỗ trợ tra cứu điểm nhanh chóng!\n\n"+
 		"Hướng dẫn sử dụng: Đăng nhập qua lệnh /login + [MSSV] + [password]\n"+
 		"/grade + [Mã học phần] - tra cứu điểm \n"+
-		"/allGrade - xem tất cả điểm của bạn \n"+
+		"/allgrade - xem tất cả điểm của bạn \n"+
 		"/history - xem lịch sử điểm\n"+
 		"/clear - xóa lịch sử điểm\n"+
 		"/info - xem thông tin tài khoản\n"+
-		"/getOTP + [MSSV] - lấy OTP để đăng ký hoặc đổi mật khẩu\n"+
+		"/getotp + [MSSV] - lấy OTP để đăng ký hoặc đổi mật khẩu\n"+
 		"/register + [MSSV] + [password] + [OTP] - đăng ký tài khoản\n"+
-		"/resetPassWord + [MSSV] + [password] + [OTP] - đổi mật khẩu\n"+
+		"/resetpassword + [MSSV] + [password] + [OTP] - đổi mật khẩu\n"+
 		"/help - để biết thêm các lệnh khác.",
 		userID)
 
@@ -31,13 +31,13 @@ func HandleHelp(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	response := fmt.Sprintf(
 		"Hướng dẫn sử dụng: Đăng nhập qua lệnh /login + [MSSV] + [password]\n" +
 			"/grade - tra cứu điểm \n" +
-			"/allGrade - xem tất cả điểm của bạn \n" +
+			"/allgrade - xem tất cả điểm của bạn \n" +
 			"/history - xem lịch sử điểm\n" +
 			"/clear - xóa lịch sử điểm\n" +
 			"/info - xem thông tin tài khoản\n" +
-			"/getOTP + [MSSV] - lấy OTP để đăng nhập\n" +
+			"/getotp + [MSSV] - lấy OTP để đăng nhập\n" +
 			"/register + [MSSV] + [password] + [OTP] - đăng ký tài khoản\n" +
-			"/resetPassWord + [MSSV] + [password] + [OTP] - đổi mật khẩu\n" +
+			"/resetpassword + [MSSV] + [password] + [OTP] - đổi mật khẩu\n" +
 			"/help - để biết thêm các lệnh khác.")
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
 	bot.Send(msg)
