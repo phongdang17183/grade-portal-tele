@@ -71,7 +71,9 @@ func HandleGrade(bot *tgbotapi.BotAPI, update tgbotapi.Update, semesterOrCourseI
 	if err != nil {
 		response = "Không thể lấy dữ liệu điểm: " + err.Error()
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
-		bot.Send(msg)
+		if _, sendErr := bot.Send(msg); sendErr != nil {
+			log.Printf("Lỗi khi gửi tin nhắn: %v", sendErr)
+		}
 		return
 	}
 
@@ -97,7 +99,9 @@ func HandleGrade(bot *tgbotapi.BotAPI, update tgbotapi.Update, semesterOrCourseI
 	msgText := fmt.Sprintf("```json\n%s\n```", string(jsonData))
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, msgText)
 	msg.ParseMode = "MarkdownV2"
-	bot.Send(msg)
+	if _, sendErr := bot.Send(msg); sendErr != nil {
+		log.Printf("Lỗi khi gửi tin nhắn: %v", sendErr)
+	}
 }
 
 func HandleAllGrade(bot *tgbotapi.BotAPI, update tgbotapi.Update, cfg *config.Config) {
@@ -132,7 +136,9 @@ func HandleAllGrade(bot *tgbotapi.BotAPI, update tgbotapi.Update, cfg *config.Co
 		// Xử lý lỗi khi mã hóa JSON
 		fmt.Println("Lỗi khi mã hóa JSON:", err)
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Không thể xử lý dữ liệu JSON.")
-		bot.Send(msg)
+		if _, sendErr := bot.Send(msg); sendErr != nil {
+			log.Printf("Lỗi khi gửi tin nhắn: %v", sendErr)
+		}
 		return
 	}
 	fmt.Println("Dữ liệu JSON trả về:", string(responseJSON))
@@ -140,5 +146,7 @@ func HandleAllGrade(bot *tgbotapi.BotAPI, update tgbotapi.Update, cfg *config.Co
 	msgText := fmt.Sprintf("```json\n%s\n```", string(responseJSON))
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, string(msgText))
 	msg.ParseMode = "MarkdownV2" // Nếu bạn muốn hiển thị trong markdown
-	bot.Send(msg)
+	if _, sendErr := bot.Send(msg); sendErr != nil {
+		log.Printf("Lỗi khi gửi tin nhắn: %v", sendErr)
+	}
 }
