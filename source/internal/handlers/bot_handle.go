@@ -62,13 +62,16 @@ func HandleClear(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	res := services.ClearHistory(update.Message.Chat.ID)
 	var response string
 	if res {
-		response = "Lịch sử tra cứu đã được xóa."
+		response = "Lịch sử tra cứu đã được xóa ✅\\."
 	} else {
-		response = "Error"
+		response = "Error ❌\\."
 	}
 
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
-	bot.Send(msg)
+	msg.ParseMode = "MarkdownV2"
+	if _, err := bot.Send(msg); err != nil {
+		log.Printf("Lỗi khi gửi tin nhắn: %v", err)
+	}
 }
 
 func HandleHistory(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
