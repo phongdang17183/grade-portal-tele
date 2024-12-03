@@ -83,9 +83,11 @@ func HandleHistory(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	if err != nil {
 		var response string
 		if strings.Contains(err.Error(), "no history found") {
-			response = " Không có lịch sử tra cứu nào để hiển thị\\."
+			response = "Không có lịch sử tra cứu."
+		} else if strings.Contains(err.Error(), "context deadline exceeded") {
+			response = "Lỗi kết nối cơ sở dữ liệu, thử lại sau."
 		} else {
-			response = " Lỗi lấy lịch sử, thử lại sau"
+			response = "Lỗi không xác định, thử lại sau."
 		}
 
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
@@ -93,6 +95,12 @@ func HandleHistory(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 		if _, sendErr := bot.Send(msg); sendErr != nil {
 			log.Printf("Lỗi khi gửi tin nhắn: %v", sendErr)
 		}
+		return
+	}
+
+	if len(*response) == 0 {
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Không có lịch sử tra cứu.")
+		bot.Send(msg)
 		return
 	}
 
