@@ -50,14 +50,19 @@ func HandleInfo(bot *tgbotapi.BotAPI, update tgbotapi.Update, cfg *config.Config
 	response, err := json.MarshalIndent(resp, "", "  ")
 	if err != nil {
 		fmt.Println(err)
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Lỗi xử lý dữ liệu.")
-		bot.Send(msg)
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Lỗi xử lý dữ liệu. Hãy thử lại vào lần sau.")
+		if _, sendErr := bot.Send(msg); sendErr != nil {
+			log.Printf("Lỗi khi gửi tin nhắn: %v", sendErr)
+		}
 		return
 	}
+
 	msgText := fmt.Sprintf("```json\n%s\n```", response)
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, msgText)
 	msg.ParseMode = "MarkdownV2"
-	bot.Send(msg)
+	if _, sendErr := bot.Send(msg); sendErr != nil {
+		log.Printf("Lỗi khi gửi tin nhắn: %v", sendErr)
+	}
 }
 
 func HandleGrade(bot *tgbotapi.BotAPI, update tgbotapi.Update, semesterOrCourseID string, cfg *config.Config) {
