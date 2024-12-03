@@ -5,6 +5,7 @@ import (
 	"Grade_Portal_TelegramBot/internal/services"
 	"encoding/json"
 	"fmt"
+	"log"
 	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -14,51 +15,53 @@ func HandleInfo(bot *tgbotapi.BotAPI, update tgbotapi.Update, cfg *config.Config
 	resp, err := services.GetStudentInfo(update.Message.Chat.ID, cfg)
 
 	if err != nil {
-		errorDetails := "Lỗi: " + err.Error()
-		var response string
-
-		if strings.Contains(err.Error(), "token not found") {
-			response = "Không tìm thấy thông tin đăng nhập. Hãy đăng nhập trước khi sử dụng dịch vụ"
-		} else if strings.Contains(err.Error(), "database error") {
-			response = "Không kết nối được với cơ sở dữ liệu. Hãy thử lại vào lần sau."
-		} else if strings.Contains(err.Error(), "error getting token") {
-			response = "Không tìm thấy thông tin đăng nhập. Hãy đăng nhập trước khi sử dụng dịch vụ"
-		} else if strings.Contains(err.Error(), "error creating request") {
-			response = "Không  kết nối được với hệ thống. Hãy thử lại vào lần sau"
-		} else if strings.Contains(err.Error(), "error sending request") {
-			response = "Hệ thống không phản hồi.  Hãy thử lại vào lần sau."
-		} else if strings.Contains(err.Error(), "unexpected status code") {
-			response = "Hệ thống gặp lỗi khi truy xuất thông tin. Mã lỗi API không hợp lệ."
-		} else if strings.Contains(err.Error(), "error decoding response") {
-			response = "Dữ liệu nhận được không hợp lệ. Hãy thử lại vào lần sau."
-		} else if strings.Contains(err.Error(), "access forbidden") {
-			response = "Hệ thống từ chối yêu cầu. Hãy liên hệ với dịch vụ hỗ trợ."
-		} else if strings.Contains(err.Error(), "internal server error") {
-			response = "Lỗi hệ thống. Hãy thử lại vào lần sau."
-		} else if strings.Contains(err.Error(), "unauthorized access") {
-			response = "Không có quyền truy cập. Hãy kiểm tra thông tin đăng nhập."
-		} else if strings.Contains(err.Error(), "timeout") {
-			response = "Kết nối bị gián đoạn. Hãy thử lại vào lần sau."
-		} else {
-			response = "Đã xảy ra lỗi không xác định. Hãy thử lại vào lần sau."
+		errorMapping := map[string]string{
+			"token not found":         "Không tìm thấy thông tin đăng nhập. Hãy đăng nhập trước khi sử dụng dịch vụ",
+			"database error":          "Không kết nối được với cơ sở dữ liệu. Hãy thử lại vào lần sau.",
+			"error getting token":     "Không tìm thấy thông tin đăng nhập. Hãy đăng nhập trước khi sử dụng dịch vụ.",
+			"error creating request":  "Không  kết nối được với hệ thống. Hãy thử lại vào lần sau",
+			"error sending request":   "Hệ thống không phản hồi. Hãy thử lại vào lần sau.",
+			"unexpected status code":  "Hệ thống gặp lỗi khi truy xuất thông tin. Mã lỗi API không hợp lệ.",
+			"error decoding response": "Dữ liệu nhận được không hợp lệ. Hãy thử lại vào lần sau.",
+			"access forbidden":        "Hệ thống từ chối yêu cầu. Hãy liên hệ với dịch vụ hỗ trợ.",
+			"internal server error":   "Lỗi hệ thống. Hãy thử lại vào lần sau.",
+			"unauthorized access":     "Không có quyền truy cập. Hãy kiểm tra thông tin đăng nhập.",
+			"timeout":                 "Kết nối bị gián đoạn. Hãy thử lại vào lần sau.",
 		}
 
+		response := "Đã xảy ra lỗi không xác định. Hãy thử lại vào lần sau."
+		for key, val := range errorMapping {
+			if strings.Contains(err.Error(), key) {
+				response = val
+				break
+			}
+		}
+
+		errorDetails := "Lỗi: " + err.Error()
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, response+"\n\n"+errorDetails)
-		bot.Send(msg)
+		if _, sendErr := bot.Send(msg); sendErr != nil {
+			log.Printf("Lỗi khi gửi tin nhắn lỗi: %v", sendErr)
+		}
 		return
+
 	}
 
 	response, err := json.MarshalIndent(resp, "", "  ")
 	if err != nil {
 		fmt.Println(err)
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Lỗi xử lý dữ liệu.")
-		bot.Send(msg)
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Lỗi xử lý dữ liệu. Hãy thử lại vào lần sau.")
+		if _, sendErr := bot.Send(msg); sendErr != nil {
+			log.Printf("Lỗi khi gửi tin nhắn: %v", sendErr)
+		}
 		return
 	}
+
 	msgText := fmt.Sprintf("```json\n%s\n```", response)
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, msgText)
 	msg.ParseMode = "MarkdownV2"
-	bot.Send(msg)
+	if _, sendErr := bot.Send(msg); sendErr != nil {
+		log.Printf("Lỗi khi gửi tin nhắn: %v", sendErr)
+	}
 }
 
 func HandleGrade(bot *tgbotapi.BotAPI, update tgbotapi.Update, semesterOrCourseID string, cfg *config.Config) {

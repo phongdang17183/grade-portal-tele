@@ -4,58 +4,74 @@ import (
 	"Grade_Portal_TelegramBot/internal/services"
 	"encoding/json"
 	"fmt"
+	"log"
+	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-func HandleStart(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
-    userID := update.Message.From.ID
-    response := fmt.Sprintf("Chào mừng *%d* đến với hệ thống tra cứu điểm, tôi là một bot-chat hỗ trợ tra cứu điểm nhanh chóng!\n\n"+
-        "*Hướng dẫn sử dụng:*\n\n"+
-        "1. /login + [MSSV] + [password] - Đăng nhập vào hệ thống\n"+
-        "2. /grade + [Mã học phần] - Tra cứu điểm\n"+
-        "3. /allgrade - Xem tất cả điểm\n"+
-        "4. /history -Xem lịch sử điểm\n"+
-        "5. /clear - Xóa lịch sử điểm\n"+
-        "6. /info - Xem thông tin tài khoản\n"+
-        "7. /getotp + [MSSV] - Lấy OTP để đăng ký hoặc đổi mật khẩu\n"+
-        "8. /register + [MSSV] + [password] + [OTP] - Đăng ký tài khoản\n"+
-        "9. /resetpassword + [MSSV] + [password] + [OTP] - Đổi mật khẩu\n"+
-        "10. /help - Để biết thêm các lệnh khác.",
-        userID)
-
-    msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
-    msg.ParseMode = "Markdown"
-    bot.Send(msg)
+var commands = []struct {
+	Command     string
+	Description string
+}{
+	{"/login + [MSSV] + [password]", "Đăng nhập vào hệ thống"},
+	{"/grade + [Mã học phần]", "Tra cứu điểm"},
+	{"/allgrade", "Xem tất cả điểm"},
+	{"/history", "Xem lịch sử điểm"},
+	{"/clear", "Xóa lịch sử điểm"},
+	{"/info", "Xem thông tin tài khoản"},
+	{"/getotp + [MSSV]", "Lấy OTP"},
+	{"/register + [MSSV] + [password] + [OTP]", "Đăng ký tài khoản"},
+	{"/resetpassword + [MSSV] + [password] + [OTP]", "Đổi mật khẩu"},
+	{"/help", "Để biết thêm các lệnh khác"},
 }
 
+func HandleStart(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
+	userID := update.Message.From.ID
+	escapedUserID := fmt.Sprintf("\\%d", userID)
+	var response strings.Builder
+
+	response.WriteString(fmt.Sprintf("Chào mừng *%s* đến với hệ thống tra cứu điểm, tôi là một bot-chat hỗ trợ tra cứu điểm nhanh chóng!\n\n", escapedUserID))
+	response.WriteString("*Hướng dẫn:*\n\n")
+
+	for i, cmd := range commands {
+		response.WriteString(fmt.Sprintf("%d\\. `%s` \\- %s\n", i+1, cmd.Command, cmd.Description))
+	}
+
+	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response.String())
+	msg.ParseMode = "Markdown"
+	if _, err := bot.Send(msg); err != nil {
+		log.Printf("Lỗi khi gửi tin nhắn trong: %v", err)
+	}
+}
 func HandleHelp(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
-	response := fmt.Sprintf(
-		"Hướng dẫn sử dụng: Đăng nhập qua lệnh /login + [MSSV] + [password]\n" +
-			"/grade - tra cứu điểm \n" +
-			"/allgrade - xem tất cả điểm của bạn \n" +
-			"/history - xem lịch sử điểm\n" +
-			"/clear - xóa lịch sử điểm\n" +
-			"/info - xem thông tin tài khoản\n" +
-			"/getotp + [MSSV] - lấy OTP để đăng nhập\n" +
-			"/register + [MSSV] + [password] + [OTP] - đăng ký tài khoản\n" +
-			"/resetpassword + [MSSV] + [password] + [OTP] - đổi mật khẩu\n" +
-			"/help - để biết thêm các lệnh khác.")
-	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
-	bot.Send(msg)
+	var response strings.Builder
+	response.WriteString("*Hướng dẫn sử dụng:*\n\n")
+	for i, cmd := range commands {
+		response.WriteString(fmt.Sprintf("%d\\. `%s` \\- %s\n", i+1, cmd.Command, cmd.Description))
+	}
+
+	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response.String())
+	msg.ParseMode = "MarkdownV2"
+	if _, err := bot.Send(msg); err != nil {
+		log.Printf("Lỗi khi gửi tin nhắn trong: %v", err)
+	}
 }
 
 func HandleClear(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	res := services.ClearHistory(update.Message.Chat.ID)
 	var response string
 	if res {
-		response = "Lịch sử tra cứu đã được xóa."
+		response = "Lịch sử tra cứu đã được xóa ✅\\."
 	} else {
-		response = "Error"
+		response = "Error ❌\\."
 	}
 
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
-	bot.Send(msg)
+	msg.ParseMode = "MarkdownV2"
+	if _, err := bot.Send(msg); err != nil {
+		log.Printf("Lỗi khi gửi tin nhắn: %v", err)
+	}
 }
 
 func HandleHistory(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
