@@ -31,7 +31,7 @@ func HandleStart(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	escapedUserID := fmt.Sprintf("\\%d", userID)
 	var response strings.Builder
 
-	response.WriteString(fmt.Sprintf("Chào mừng *%s* đến với hệ thống tra cứu điểm, tôi là một bot-chat hỗ trợ tra cứu điểm nhanh chóng!\n\n🎉", escapedUserID))
+	response.WriteString(fmt.Sprintf("Chào mừng *%s* đến với hệ thống tra cứu điểm, tôi là một bot-chat hỗ trợ tra cứu điểm nhanh chóng!🎉\n\n", escapedUserID))
 	response.WriteString("*Hướng dẫn:*\n\n")
 
 	for i, cmd := range commands {
