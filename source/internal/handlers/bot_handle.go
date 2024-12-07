@@ -31,11 +31,17 @@ func HandleStart(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	escapedUserID := fmt.Sprintf("\\%d", userID)
 	var response strings.Builder
 
-	response.WriteString(fmt.Sprintf("Chào mừng *%s* đến với hệ thống tra cứu điểm, tôi là một bot-chat hỗ trợ tra cứu điểm nhanh chóng!\n\n", escapedUserID))
+	response.WriteString(fmt.Sprintf("Chào mừng *%s* đến với hệ thống tra cứu điểm, tôi là một bot-chat hỗ trợ tra cứu điểm nhanh chóng!\n\n🎉", escapedUserID))
 	response.WriteString("*Hướng dẫn:*\n\n")
 
 	for i, cmd := range commands {
 		response.WriteString(fmt.Sprintf("%d\\. `%s` \\- %s\n", i+1, cmd.Command, cmd.Description))
+	}
+
+	imagePath := "img/Hello.png"
+	photo := tgbotapi.NewPhoto(update.Message.Chat.ID, tgbotapi.FilePath(imagePath))
+	if _, err := bot.Send(photo); err != nil {
+		log.Println("Lỗi gửi ảnh:", err)
 	}
 
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, response.String())
