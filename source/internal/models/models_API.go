@@ -38,7 +38,7 @@ type Grade struct {
 type Grades struct {
 	Ms    string `json:"ms"`
 	Name  string `json:"name"`
-	Score Score  `json:"score"`
+	Score Score  `json:"data"`
 }
 type AllGrades struct {
 	AllGrades []Grades `json:"scores"`

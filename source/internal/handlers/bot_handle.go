@@ -82,8 +82,8 @@ func HandleHistory(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 		bot.Send(msg)
 	} else {
 		for _, course := range *response {
-			jsonStr, _ := json.Marshal(course)
-			fmt.Println(string(jsonStr))
+			jsonStr, _ := json.MarshalIndent(course, "", " ")
+			// fmt.Println(string(jsonStr))
 			msgText := fmt.Sprintf("```json\n%s\n```", string(jsonStr))
 			msg = tgbotapi.NewMessage(update.Message.Chat.ID, msgText)
 			msg.ParseMode = "MarkdownV2"

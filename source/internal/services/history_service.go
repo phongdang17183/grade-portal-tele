@@ -50,8 +50,7 @@ func GetHistory(chatID int64) (*[]models.Course, error) {
 	return &result.ListCourse, nil
 }
 
-
-func AddCourseToHistory(chatID int64, courseName string, course models.Course) error {
+func AddCourseToHistory(chatID int64, courseID string, course models.Course) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -66,7 +65,8 @@ func AddCourseToHistory(chatID int64, courseName string, course models.Course) e
 			"chat_id": chatID,
 			"list_course": []models.Course{
 				{
-					CourseName: courseName,
+					CourseName: course.CourseName,
+					CourseID:   courseID,
 					Score:      course.Score,
 				},
 			},
@@ -93,7 +93,8 @@ func AddCourseToHistory(chatID int64, courseName string, course models.Course) e
 		"$push": map[string]interface{}{
 			"list_course": []models.Course{
 				{
-					CourseName: courseName,
+					CourseName: course.CourseName,
+					CourseID:   courseID,
 					Score:      course.Score,
 				},
 			},
@@ -107,7 +108,7 @@ func AddCourseToHistory(chatID int64, courseName string, course models.Course) e
 	return nil
 }
 
-func AddAllCourseToHistory(chatID int64, Ms string, score models.Score) error {
+func AddAllCourseToHistory(chatID int64, grade models.Grades, score models.Score) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -124,7 +125,8 @@ func AddAllCourseToHistory(chatID int64, Ms string, score models.Score) error {
 			"chat_id": chatID,
 			"list_course": []models.Course{
 				{
-					CourseName: Ms,
+					CourseName: grade.Name,
+					CourseID:   grade.Ms,
 					Score:      score,
 				},
 			},
@@ -140,7 +142,7 @@ func AddAllCourseToHistory(chatID int64, Ms string, score models.Score) error {
 	}
 	// Kiểm tra nếu khóa học đã tồn tại
 	for _, c := range history.ListCourse {
-		if c.CourseName == Ms {
+		if c.CourseID == grade.Ms {
 			return nil
 		}
 	}
@@ -149,7 +151,8 @@ func AddAllCourseToHistory(chatID int64, Ms string, score models.Score) error {
 	update := map[string]interface{}{
 		"$push": map[string]interface{}{
 			"list_course": models.Course{
-				CourseName: Ms,
+				CourseName: grade.Name,
+				CourseID:   grade.Ms,
 				Score:      score,
 			},
 		},

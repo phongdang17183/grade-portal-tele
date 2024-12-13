@@ -11,5 +11,6 @@ type DBHistory struct {
 }
 type Course struct {
 	CourseName string `bson:"course_name"`
+	CourseID   string `bson:"course_id"`
 	Score      Score  `bson:"score"`
 }

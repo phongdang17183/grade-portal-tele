@@ -79,11 +79,11 @@ func HandleGrade(bot *tgbotapi.BotAPI, update tgbotapi.Update, semesterOrCourseI
 		"course_id":   semesterOrCourseID,
 		"course_name": resp.Name,
 		"scores": map[string]interface{}{
-			"BT":  resp.Score.BT,
-			"TN":  resp.Score.TN,
-			"BTL": resp.Score.BTL,
-			"GK":  resp.Score.GK,
-			"CK":  resp.Score.CK,
+			"a_BT":  resp.Score.BT,
+			"b_TN":  resp.Score.TN,
+			"c_BTL": resp.Score.BTL,
+			"d_GK":  resp.Score.GK,
+			"e_CK":  resp.Score.CK,
 		},
 	}
 
@@ -102,43 +102,40 @@ func HandleGrade(bot *tgbotapi.BotAPI, update tgbotapi.Update, semesterOrCourseI
 
 func HandleAllGrade(bot *tgbotapi.BotAPI, update tgbotapi.Update, cfg *config.Config) {
 	resp, err := services.GetAllGrades(update.Message.Chat.ID, cfg)
-	var response interface{}
 	if err != nil {
-		response = map[string]string{
-			"error": "Không thể lấy dữ liệu điểm: ",
-		}
+		response := "Không thể lấy dữ liệu điểm, vui lòng thử lại sau "
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, string(response))
+		bot.Send(msg)
 	} else {
-		var grades []map[string]interface{}
+
 		for _, grade := range resp.AllGrades {
 			gradeData := map[string]interface{}{
 				"course_id":   grade.Ms,
 				"course_name": grade.Name,
 				"scores": map[string]interface{}{
-					"BT":  grade.Score.BT,
-					"TN":  grade.Score.TN,
-					"BTL": grade.Score.BTL,
-					"GK":  grade.Score.GK,
-					"CK":  grade.Score.CK,
+					"a_BT":  grade.Score.BT,
+					"b_TN":  grade.Score.TN,
+					"c_BTL": grade.Score.BTL,
+					"d_GK":  grade.Score.GK,
+					"e_CK":  grade.Score.CK,
 				},
 			}
-			grades = append(grades, gradeData)
+			responseJSON, err := json.MarshalIndent(gradeData, "", "  ")
+			if err != nil {
+				// Xử lý lỗi khi mã hóa JSON
+				fmt.Println("Lỗi khi mã hóa JSON:", err)
+				msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Không thể xử lý dữ liệu JSON.")
+				bot.Send(msg)
+				return
+			}
+			// fmt.Println("Dữ liệu JSON trả về:", string(responseJSON))
+			// Gửi phản hồi dưới dạng JSON thô
+			msgText := fmt.Sprintf("```json\n%s\n```", string(responseJSON))
+			msg := tgbotapi.NewMessage(update.Message.Chat.ID, string(msgText))
+			msg.ParseMode = "MarkdownV2" // Nếu bạn muốn hiển thị trong markdown
+			bot.Send(msg)
+
 		}
-		response = map[string]interface{}{
-			"grades": grades,
-		}
+
 	}
-	responseJSON, err := json.MarshalIndent(response, "", "  ")
-	if err != nil {
-		// Xử lý lỗi khi mã hóa JSON
-		fmt.Println("Lỗi khi mã hóa JSON:", err)
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Không thể xử lý dữ liệu JSON.")
-		bot.Send(msg)
-		return
-	}
-	fmt.Println("Dữ liệu JSON trả về:", string(responseJSON))
-	// Gửi phản hồi dưới dạng JSON thô
-	msgText := fmt.Sprintf("```json\n%s\n```", string(responseJSON))
-	msg := tgbotapi.NewMessage(update.Message.Chat.ID, string(msgText))
-	msg.ParseMode = "MarkdownV2" // Nếu bạn muốn hiển thị trong markdown
-	bot.Send(msg)
 }

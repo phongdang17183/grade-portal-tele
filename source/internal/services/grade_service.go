@@ -113,12 +113,6 @@ func GetGrades(chatID int64, semesterOrCourseID string, cfg *config.Config) (*mo
 	default:
 		return nil, fmt.Errorf("lỗi không mong muốn từ API: mã trạng thái %d", resp.StatusCode)
 	}
-	// if resp.StatusCode == http.StatusNotFound {
-	// 	return nil, fmt.Errorf("mã môn %s không tồn tại. Vui lòng kiểm tra lại", semesterOrCourseID)
-	// }
-	// if resp.StatusCode != http.StatusOK {
-	// 	return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
-	// }
 
 	var grades models.Grade
 	if err := json.NewDecoder(resp.Body).Decode(&grades); err != nil {
@@ -126,7 +120,8 @@ func GetGrades(chatID int64, semesterOrCourseID string, cfg *config.Config) (*mo
 	}
 
 	course := models.Course{
-		CourseName: semesterOrCourseID,
+		CourseID: semesterOrCourseID,
+		CourseName: grades.Name,
 		Score: models.Score{
 			BT:  grades.Score.BT,
 			TN:  grades.Score.TN,
@@ -182,12 +177,7 @@ func GetAllGrades(chatID int64, cfg *config.Config) (*models.AllGrades, error) {
 	if err := json.NewDecoder(resp.Body).Decode(&allGrades); err != nil {
 		log.Fatalf("Something wrong in get all grade %v", err)
 	}
-	// for _, a := range allGrades.AllGrades {
-	// 	//res := AddCourseToHistory(chatID, a.Ms)
-	// 	if res != nil {
-	// 		log.Fatalf("Lỗi khi thêm khóa học: %v", err)
-	// 	}
-	// }
+
 	for _, grade := range allGrades.AllGrades {
 		// Lấy điểm của khóa học
 		score := models.Score{
@@ -199,7 +189,7 @@ func GetAllGrades(chatID int64, cfg *config.Config) (*models.AllGrades, error) {
 		}
 
 		// Lưu vào history cho từng khóa học
-		err := AddAllCourseToHistory(chatID, grade.Ms, score)
+		err := AddAllCourseToHistory(chatID, grade, score)
 		if err != nil {
 			log.Fatalf("Lỗi khi thêm khóa học: %v", err)
 		}
