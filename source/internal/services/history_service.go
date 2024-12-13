@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func ClearHistory(chatID int64) bool {
@@ -79,32 +80,52 @@ func AddCourseToHistory(chatID int64, courseID string, course models.Course) err
 		return nil
 	}
 
+	if err != nil {
+		return fmt.Errorf("error finding history: %w", err)
+	}
+
+	// Kiểm tra nếu list_course trống và cần khởi tạo
 	if len(history.ListCourse) == 1 && history.ListCourse[0].CourseName == "" {
 		history.ListCourse = []models.Course{}
 	}
 
+	// Kiểm tra nếu course đã tồn tại, cập nhật thông tin
 	for _, c := range history.ListCourse {
-		if c.CourseName == course.CourseName {
+		if c.CourseID == course.CourseID {
+			update := map[string]interface{}{
+				"$set": map[string]interface{}{
+					"list_course.$[elem].Score": course.Score,
+				},
+			}
+			arrayFilters := []interface{}{
+				map[string]interface{}{"elem.CourseName": course.CourseName},
+			}
+			updateOptions := options.Update().SetArrayFilters(options.ArrayFilters{Filters: arrayFilters})
+
+			_, updateErr := collection.UpdateOne(ctx, filter, update, updateOptions)
+			if updateErr != nil {
+				return fmt.Errorf("error updating course score: %w", updateErr)
+			}
 			return nil
 		}
 	}
 
+	// Nếu course chưa tồn tại, thêm mới vào list_course
 	update := map[string]interface{}{
 		"$push": map[string]interface{}{
-			"list_course": []models.Course{
-				{
-					CourseName: course.CourseName,
-					CourseID:   courseID,
-					Score:      course.Score,
-				},
+			"list_course": models.Course{
+				CourseName: course.CourseName,
+				CourseID:   courseID,
+				Score:      course.Score,
 			},
 		},
 	}
 
 	_, updateErr := collection.UpdateOne(ctx, filter, update)
 	if updateErr != nil {
-		return fmt.Errorf("error updating history: %w", updateErr)
+		return fmt.Errorf("error adding new course: %w", updateErr)
 	}
+
 	return nil
 }
 
@@ -137,12 +158,31 @@ func AddAllCourseToHistory(chatID int64, grade models.Grades, score models.Score
 		}
 		return nil
 	}
+	// Kiểm tra nếu list_course trống và cần khởi tạo
 	if len(history.ListCourse) == 1 && history.ListCourse[0].CourseName == "" {
 		history.ListCourse = []models.Course{}
 	}
+
 	// Kiểm tra nếu khóa học đã tồn tại
 	for _, c := range history.ListCourse {
 		if c.CourseID == grade.Ms {
+			// Cập nhật thông tin điểm nếu đã tồn tại
+			update := map[string]interface{}{
+				"$set": map[string]interface{}{
+					"list_course.$[elem].Score": score,
+				},
+			}
+			arrayFilters := options.ArrayFilters{
+				Filters: []interface{}{
+					map[string]interface{}{"elem.CourseID": grade.Ms},
+				},
+			}
+			updateOptions := options.Update().SetArrayFilters(arrayFilters)
+
+			_, updateErr := collection.UpdateOne(ctx, filter, update, updateOptions)
+			if updateErr != nil {
+				return fmt.Errorf("error updating course score: %w", updateErr)
+			}
 			return nil
 		}
 	}

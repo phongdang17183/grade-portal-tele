@@ -37,8 +37,8 @@ func HandleInfo(bot *tgbotapi.BotAPI, update tgbotapi.Update, cfg *config.Config
 			}
 		}
 
-		errorDetails := "Lỗi: " + err.Error()
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, response+"\n\n"+errorDetails)
+		// errorDetails := "Lỗi: " + err.Error()
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, response)
 		if _, sendErr := bot.Send(msg); sendErr != nil {
 			log.Printf("Lỗi khi gửi tin nhắn lỗi: %v", sendErr)
 		}
