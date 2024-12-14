@@ -51,7 +51,9 @@ Sao chép mã nguồn từ GitHub:
 ### 3. Tạo file cấu hình `.env`
 
 Trong thư mục `source`, tạo một file `.env` với nội dung:
+
 `TOKEN=<TOKEN CỦA BOT> ` 
+
 `API_URL=<LINK API BACKEND DATABASE>`
 
 > **Lưu ý:**
