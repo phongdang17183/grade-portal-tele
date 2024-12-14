@@ -72,7 +72,8 @@ Bot sẽ bắt đầu hoạt động và bạn có thể thử nghiệm bằng c
 Nhóm đã triển khai bot và bạn có thể sử dụng trực tiếp mà không cần cài đặt.
 
 -   **Truy cập bot tại đây**: [Grade Portal v1 Bot](https://t.me/Gradeportalv1BOT)
--   **Quét mã QR để truy cập nhanh:** <img src="report/img/QR_TelegramBot.jpg" alt="QR Code Telegram Bot" width="150" />
+-   **Quét mã QR để truy cập nhanh:** 
+<img src="report/img/QR_TelegramBot.jpg" alt="QR Code Telegram Bot" width="150" />
 
 ----------
 
