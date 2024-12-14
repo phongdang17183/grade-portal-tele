@@ -32,7 +32,7 @@ Hệ thống quản lý điểm bao gồm 5 nhóm tham gia phát triển. Nhóm 
 | 3   | Lê Vĩnh Nghiệp           | Developer       | 2212213         | [nghiep.lekhmtk22@hcmut.edu.vn](mailto:nghiep.lekhmtk22@hcmut.edu.vn)           | [vinhnghiep0811](https://github.com/vinhnghiep0811) |
 | 4   | Trần Minh Quân           | Developer       | 2212823         | [tran.minhquan1221@hcmut.edu.vn](mailto:tran.minhquan1221@hcmut.edu.vn)         | [Dopalan](https://github.com/Dopalan)         |
 | 5   | Trần Thanh Phong         | Developer       | 2212571         | [phong.dang2212548@hcmut.edu.vn](mailto:phong.dang2212548@hcmut.edu.vn)         | [Rabbit-204](https://github.com/rabbit-204)   |
-| 6   | Trương Anh Tuấn          | Developer       | 2212571         | [tuan.truong2t00nas4@hcmut.edu.vn](mailto:tuan.truong2t00nas4@hcmut.edu.vn)     | [tuntrng](https://github.com/tuntrng)         |
+| 6   | Trương Anh Tuấn          | Developer       | 2213810         | [tuan.truong2t00nas4@hcmut.edu.vn](mailto:tuan.truong2t00nas4@hcmut.edu.vn)     | [tuntrng](https://github.com/tuntrng)         |
 
 
 ## 5.Hướng dẫn cài đặt (dành cho nhà phát triển)
