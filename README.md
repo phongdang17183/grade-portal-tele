@@ -51,8 +51,8 @@ Sao chép mã nguồn từ GitHub:
 ### 3. Tạo file cấu hình `.env`
 
 Trong thư mục `source`, tạo một file `.env` với nội dung:
-    TOKEN=<TOKEN CỦA BOT>  
-    API_URL=<LINK API BACKEND DATABASE> 
+`TOKEN=<TOKEN CỦA BOT> ` 
+`API_URL=<LINK API BACKEND DATABASE>`
 
 > **Lưu ý:**
 > -   **TOKEN**: Tạo token riêng từ BotFather nếu bạn muốn tạo bot của riêng mình.
@@ -71,9 +71,12 @@ Bot sẽ bắt đầu hoạt động và bạn có thể thử nghiệm bằng c
 
 Nhóm đã triển khai bot và bạn có thể sử dụng trực tiếp mà không cần cài đặt.
 
--   **Truy cập bot tại đây**: [Grade Portal v1 Bot](https://t.me/Gradeportalv1BOT)
+-   **Truy cập bot tại**: [Grade Portal v1 Bot](https://t.me/Gradeportalv1BOT)
 -   **Quét mã QR để truy cập nhanh:** 
-<img src="report/img/QR_TelegramBot.jpg" alt="QR Code Telegram Bot" width="150" />
+<div align="center">
+  <img src="report/img/QR_TelegramBot.jpg" alt="QR Code Telegram Bot" width="150" />
+</div>
+
 
 ----------
 
