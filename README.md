@@ -94,7 +94,7 @@ Nếu bạn có bất kỳ thắc mắc nào về dự án hoặc muốn đóng 
 
 ## 9.Quá trình hoạt động
 - Biên bản họp nhóm nội bộ được diễn ra với tần suất 1 lần/1 tuần.
-- Đây là tổng hợp các biên bản họp nhóm: [Tổng hợp biên bản họp nhóm](https://www.canva.com/design/DAGS_GR8W7c/3DhbcAFdo0-Ls1OseWj3og/view?utm_content=DAGS_GR8W7c&utm_campaign=designshare&utm_medium=link&utm_source=editor)
+- Xem chi tiết quá trình hoạt động nhóm mỗi tuần, cách phân chia công việc, tiến độ hoàn thiện dự án tại: [Báo cáo tiến độ](https://github.com/dath-241/grade-portal-tele/blob/main/report/Gerneral_Report.md)
 
 ---
 
