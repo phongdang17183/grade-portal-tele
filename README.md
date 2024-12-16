@@ -89,7 +89,7 @@ Nhóm đã triển khai bot và bạn có thể sử dụng trực tiếp mà kh
 
 
 ## 8.Liên hệ
-Nếu bạn có bất kỳ thắc mắc nào về dự án hoặc muốn đóng góp, vui lòng liên hệ với nhóm qua email của các thành viên hoặc các kênh liên lạc khác (*sẽ được cập nhật*).
+Nếu bạn có bất kỳ thắc mắc nào về dự án hoặc muốn đóng góp, vui lòng liên hệ với nhóm qua email của các thành viên hoặc các kênh liên lạc khác.
 
 
 ## 9.Quá trình hoạt động
