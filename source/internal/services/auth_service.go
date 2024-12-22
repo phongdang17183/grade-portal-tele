@@ -186,10 +186,10 @@ func Login(chatID int64, mssv string, pw string, cfg *config.Config) (*models.Re
 func saveTokenToDB(chatID int64, mssv, token string) error {
 	collection := config.MongoClient.Database("Do_an").Collection("TOKEN")
 
-	filter := map[string]interface{}{"mssv": mssv} // Kiểm tra dựa trên MSSV
+	filter := map[string]interface{}{"chat_id": chatID} // Kiểm tra dựa trên MSSV
 	update := map[string]interface{}{
 		"$set": map[string]interface{}{
-			"chat_id": chatID,
+			"mssv": mssv,
 			"token":   token,
 		},
 	}
