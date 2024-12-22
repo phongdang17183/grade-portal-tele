@@ -189,8 +189,8 @@ func saveTokenToDB(chatID int64, mssv, token string) error {
 	filter := map[string]interface{}{"chat_id": chatID} // Kiểm tra dựa trên MSSV
 	update := map[string]interface{}{
 		"$set": map[string]interface{}{
-			"mssv": mssv,
-			"token":   token,
+			"mssv":  mssv,
+			"token": token,
 		},
 	}
 	opts := options.Update().SetUpsert(true)
