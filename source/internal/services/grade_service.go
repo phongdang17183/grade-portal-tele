@@ -120,7 +120,7 @@ func GetGrades(chatID int64, semesterOrCourseID string, cfg *config.Config) (*mo
 	}
 
 	course := models.Course{
-		CourseID: semesterOrCourseID,
+		CourseID:   semesterOrCourseID,
 		CourseName: grades.Name,
 		Score: models.Score{
 			BT:  grades.Score.BT,

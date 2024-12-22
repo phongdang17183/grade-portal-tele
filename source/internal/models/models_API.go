@@ -26,8 +26,8 @@ type Score struct {
 	BT  []*float64 `json:"BT"`
 	TN  []*float64 `json:"TN"`
 	BTL []*float64 `json:"BTL"`
-	GK  *float64 `json:"GK"`
-	CK  *float64 `json:"CK"`
+	GK  *float64   `json:"GK"`
+	CK  *float64   `json:"CK"`
 }
 
 type Grade struct {

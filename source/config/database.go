@@ -11,11 +11,9 @@ import (
 
 var MongoClient *mongo.Client
 
-
 func ConnectMongoDB(uri string) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
 	if err != nil {
@@ -30,5 +28,3 @@ func ConnectMongoDB(uri string) {
 	log.Println("Kết nối thành công tới MongoDB!")
 	MongoClient = client
 }
-
-
